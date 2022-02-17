@@ -1,5 +1,8 @@
 package train01;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DiamondShape {
     private int n;
 
@@ -7,27 +10,35 @@ public class DiamondShape {
         this.n = count;
     }
 
-    public void printDiamond (){
-        int odd = 1, space = n/2;
-        String plus = "+"; String blank = " ";
+    public void printDiamond() {
+        List<String> arr = new ArrayList<>();
+        int odd = 1, space = n / 2;
+        String plus = "+";
+        String blank = " ";
+        String line = "";
 
         for (int i = 0; i < n; i++) {
             for (int k = space; k >= 1; k--) {
-                System.out.print(blank);
+                line += blank;
             }
             for (int j = 0; j < odd; j++) {
-                System.out.print(plus);
+                line += plus;
             }
 
-            System.out.println();
+            arr.add(line);
+            line = "";
 
-            if (i < n/2) {
+            if (i < n / 2) {
                 odd += 2; //เพิ่มทีละ2
                 space -= 1;
             } else {
                 odd -= 2; //ลดทีละ2
                 space += 1;
             }
+        }
+
+        for(String s: arr){
+            System.out.println(s);
         }
     }
 }

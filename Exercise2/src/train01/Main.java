@@ -1,38 +1,38 @@
 package train01;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        int odd = 0; int even = 0;
+        int odd = 0;
+        int even = 0;
 
         try (Scanner input = new Scanner(System.in)) {
-            while(true){
+            while (true) {
                 System.out.print("Enter odd number = ");
-                int n1 = input.nextInt();
+                odd = input.nextInt();
 
                 System.out.print("Enter even number = ");
-                int n2 = input.nextInt();
+                even = input.nextInt();
 
-                if (n1 % 2 == 0) {
+                if (odd % 2 == 0) {
                     System.out.println("Please enter odd number only.");
-                }else if(n2 % 2 != 0) {
+                } else if (even % 2 != 0) {
                     System.out.println("Please enter even number only.");
-                }else {
-                    odd = n1;
-                    even = n2;
+                } else {
+                    DiamondShape d = new DiamondShape(odd);
+                    d.printDiamond();
+
+                    ButterflyShape b = new ButterflyShape(even);
+                    b.printButterfly();
                     break;
                 }
             }
+
+        } catch (InputMismatchException e) {
+            System.out.println("Only number, please.");
         }
-
-        DiamondShape d = new DiamondShape(odd);
-        d.printDiamond();
-
-        ButterflyShape b = new ButterflyShape(even);
-        b.printButterfly();
-
     }
 }
-
