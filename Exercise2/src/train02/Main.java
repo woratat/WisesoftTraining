@@ -7,12 +7,12 @@ public class Main {
 
     public static void main(String[] args) {
         int input;
+        Scanner scanner = new Scanner(System.in);
 
         do
         {
             try
             {
-                Scanner scanner = new Scanner(System.in);
                 System.out.print("Enter number between 1 and 50 or 0 to exit: ");
                 input = scanner.nextInt();
 
@@ -38,4 +38,3 @@ public class Main {
         while (true);
     }
 }
-

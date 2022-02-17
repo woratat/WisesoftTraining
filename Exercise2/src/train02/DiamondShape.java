@@ -32,16 +32,6 @@ public class DiamondShape {
         }
 
         stack.stream().forEach(System.out::println); // print upper half
-        reverse(stack).stream().forEach(System.out::println); // print bottom half
-    }
-
-    static Stack reverse(Stack stack){
-        Stack<String> stackCopy = new Stack<>();
-        stack.pop();
-
-        while(!stack.empty()){
-            stackCopy.push((String) stack.pop());
-        }
-        return stackCopy;
+        Reverse.reverse(stack).stream().forEach(System.out::println); // print bottom half
     }
 }

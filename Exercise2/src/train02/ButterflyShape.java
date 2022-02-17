@@ -14,7 +14,7 @@ public class ButterflyShape {
 
     public void printButterfly() {
         pushStack().stream().forEach(System.out::println);
-        reverse(pushStack()).stream().forEach(System.out::println);
+        Reverse.reverse(pushStack()).stream().forEach(System.out::println);
     }
 
     public Stack pushStack() {
@@ -35,22 +35,12 @@ public class ButterflyShape {
             line = "";
         }
 
-        for (int j = 0; j < n; j++) { //center loop
+        for (int j = 0; j < n; j++) { //center line
             line += plus;
         }
         line = line + minus + line.replaceAll(blank, "");
         stack.push(line);
 
         return stack;
-    }
-
-    static Stack reverse(Stack stack){
-        Stack<String> stackCopy = new Stack<>();
-        stack.pop();
-
-        while(!stack.empty()){
-            stackCopy.push((String) stack.pop());
-        }
-        return stackCopy;
     }
 }
