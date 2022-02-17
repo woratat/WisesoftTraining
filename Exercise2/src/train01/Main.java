@@ -27,8 +27,6 @@ public class Main {
             }
         }
 
-        System.out.println("");
-
         DiamondShape d = new DiamondShape(odd);
         d.printDiamond();
 

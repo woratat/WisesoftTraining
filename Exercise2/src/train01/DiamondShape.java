@@ -9,13 +9,14 @@ public class DiamondShape {
 
     public void printDiamond (){
         int odd = 1, space = n/2;
+        String plus = "+"; String blank = " ";
 
         for (int i = 0; i < n; i++) {
             for (int k = space; k >= 1; k--) {
-                System.out.print(" ");
+                System.out.print(blank);
             }
             for (int j = 0; j < odd; j++) {
-                System.out.print("+");
+                System.out.print(plus);
             }
 
             System.out.println();
