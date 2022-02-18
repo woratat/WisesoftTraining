@@ -12,11 +12,11 @@ public class DiamondShape {
     }
 
     public void printDiamond() {
-        int odd = 1, space = n/2;
+        int odd = 1, space = n / 2;
         String line = "";
         Stack<String> stack = new Stack<>();
 
-        for (int i = n; i>=1; i-=2) {
+        for (int i = n; i >= 1; i -= 2) {
             for (int k = space; k >= 1; k--) {
                 line += blank;
             }
@@ -31,7 +31,11 @@ public class DiamondShape {
             space -= 1;
         }
 
-        stack.stream().forEach(System.out::println); // print upper half
-        Reverse.reverse(stack).stream().forEach(System.out::println); // print bottom half
+        stack.stream().forEach(System.out::println);
+        stack.pop();
+        for (int i = stack.size(); i > 0; i--) {
+            System.out.println(stack.peek());
+            stack.pop();
+        }
     }
 }

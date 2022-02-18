@@ -13,8 +13,14 @@ public class ButterflyShape {
     }
 
     public void printButterfly() {
-        pushStack().stream().forEach(System.out::println);
-        Reverse.reverse(pushStack()).stream().forEach(System.out::println);
+        Stack<String> stack = pushStack();
+
+        stack.stream().forEach(System.out::println);
+        stack.pop();
+        for (int i = stack.size(); i > 0; i--) {
+            System.out.println(stack.peek());
+            stack.pop();
+        }
     }
 
     public Stack pushStack() {
