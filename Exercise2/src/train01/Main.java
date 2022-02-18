@@ -11,25 +11,31 @@ public class Main {
 
         try (Scanner input = new Scanner(System.in)) {
             while (true) {
-                System.out.print("Enter odd number = ");
+                System.out.print("Enter odd number for Diamond shape : ");
                 odd = input.nextInt();
-
-                System.out.print("Enter even number = ");
-                even = input.nextInt();
 
                 if (odd % 2 == 0) {
                     System.out.println("Please enter odd number only.");
-                } else if (even % 2 != 0) {
-                    System.out.println("Please enter even number only.");
                 } else {
-                    DiamondShape d = new DiamondShape(odd);
-                    d.printDiamond();
-
-                    ButterflyShape b = new ButterflyShape(even);
-                    b.printButterfly();
                     break;
                 }
             }
+
+            while (true) {
+                System.out.print("Enter even number for Butterfly shape : ");
+                even = input.nextInt();
+
+                if (even % 2 != 0) {
+                    System.out.println("Please enter even number only.");
+                } else {
+                    break;
+                }
+            }
+
+            DiamondShape diamondShape = new DiamondShape(odd);
+            diamondShape.printDiamond();
+            ButterflyShape butterflyShape = new ButterflyShape(even);
+            butterflyShape.printButterfly();
 
         } catch (InputMismatchException e) {
             System.out.println("Only number, please.");

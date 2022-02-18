@@ -1,7 +1,9 @@
 package train01;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ButterflyShape {
     private int n;
@@ -24,9 +26,7 @@ public class ButterflyShape {
             for (int k = 0; k < 2 * (n - i) - 1; k++) {
                 line += blank;
             }
-            for (int j = 0; j <= i; j++) {
-                line += plus;
-            }
+            line += line.replaceAll(blank,"");
             arr.add(line);
             line = "";
         }
@@ -34,29 +34,12 @@ public class ButterflyShape {
         for (int j = 0; j < n; j++) {
             line += plus;
         }
-        line += center;
-        for (int j = 0; j < n; j++) {
-            line += plus;
-        }
+        line += center + line;
         arr.add(line);
-        line = "";
 
-        for (int i = n - 2; i >= 0; i--) {
-            for (int j = 0; j <= i; j++) {
-                line += plus;
-            }
-            for (int k = 0; k < 2 * (n - i) - 1; k++) {
-                line += blank;
-            }
-            for (int j = 0; j <= i; j++) {
-                line += plus;
-            }
-            arr.add(line);
-            line = "";
-        }
 
-        for(String s: arr){
-            System.out.println(s);
-        }
+        arr.stream().forEach(System.out::println);
+        Collections.reverse(arr);
+        arr.stream().skip(1).collect(Collectors.toList()).forEach(System.out::println);
     }
 }
