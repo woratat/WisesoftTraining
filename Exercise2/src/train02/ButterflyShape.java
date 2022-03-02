@@ -4,7 +4,7 @@ import java.util.Stack;
 
 public class ButterflyShape {
     private int n;
-    String plus = "+";
+    String symbol = "+";
     String minus = "-";
     String blank = " ";
 
@@ -18,8 +18,7 @@ public class ButterflyShape {
         stack.stream().forEach(System.out::println);
         stack.pop();
         for (int i = stack.size(); i > 0; i--) {
-            System.out.println(stack.peek());
-            stack.pop();
+            System.out.println(stack.pop());
         }
     }
 
@@ -29,20 +28,20 @@ public class ButterflyShape {
 
         for (int i = 0; i < n-1; i++) {
             for (int j = 0; j <= i; j++) {
-                line += plus;
+                line += symbol;
             }
             for (int k = 0; k < 2 * (n - i) - 1; k++) {
                 line += blank;
             }
 
-            line += line.replaceAll(blank, "");
+            line += line.replaceAll(blank, "");  //add same amount of symbol without blank
 
             stack.push(line);
             line = "";
         }
 
         for (int j = 0; j < n; j++) { //center line
-            line += plus;
+            line += symbol;
         }
         line = line + minus + line.replaceAll(blank, "");
         stack.push(line);

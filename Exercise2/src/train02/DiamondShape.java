@@ -4,7 +4,7 @@ import java.util.Stack;
 
 public class DiamondShape {
     private int n;
-    String plus = "+";
+    String symbol = "+";
     String blank = " ";
 
     public DiamondShape(int count) {
@@ -21,7 +21,7 @@ public class DiamondShape {
                 line += blank;
             }
             for (int j = 0; j < odd; j++) {
-                line += plus;
+                line += symbol;
             }
 
             stack.push(line);

@@ -15,7 +15,7 @@ public class Main {
                     input = scanner.nextInt();
 
                     if (input < 0 || input > 50) {
-                        System.out.println("Please enter only number between 1 and 50 only.\n");
+                        System.out.println("Please enter only number between 1 and 50 only.");
                     } else {
                         if (input == 0) {
                             break;
@@ -28,7 +28,7 @@ public class Main {
                         }
                     }
                 } catch (InputMismatchException exception) {
-                    System.out.println("Integers only, please.\n");
+                    System.out.println("Integers only, please.");
                 }
             }
             while (true);

@@ -36,9 +36,6 @@ public class DiamondShape {
                 space += 1;
             }
         }
-
-        for(String s: arr){
-            System.out.println(s);
-        }
+        arr.stream().forEach(System.out::println);
     }
 }

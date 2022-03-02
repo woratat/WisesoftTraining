@@ -9,7 +9,7 @@ public class Main {
         int odd = 0;
         int even = 0;
 
-        try (Scanner input = new Scanner(System.in)) {
+        try (Scanner input = new Scanner(System.in)) { //
             while (true) {
                 System.out.print("Enter odd number for Diamond shape : ");
                 odd = input.nextInt();
