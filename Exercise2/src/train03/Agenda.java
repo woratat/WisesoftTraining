@@ -2,67 +2,92 @@ package train03;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Agenda {
-    int startHour = 9;
-    int startMin = 0;
+    int hour = 9;
+    int minute = 0;
     int day = 1;
 
-    public Queue setAgenda(List<String> data) {
-        String hm;
+    public Queue<String> setAgenda(List<String> data) {
+        String time;
         boolean afterNoon = false;
-        Queue<String> queue = new LinkedList<>();
+        Queue<String> queue = new ArrayDeque<>();
         DateFormat dateFormat = new DateFormat();
-        String date = data.get(0);
-        String tomorrow = dateFormat.formatDate(dateFormat.getTomorrow(date));
+        String tomorrow = dateFormat.formatDate(dateFormat.getTomorrow(data.get(0)));
 
         for (int i = 0; i < data.size(); i++) {
-            if (data.get(i).endsWith("min")) {
-                long time = Long.parseLong(data.get(i).replaceAll("[^0-9]+", ""));
-                Duration dur = Duration.ofMinutes(time);
+            if (!data.get(i).endsWith("min")) {
+                queue.add("Day " + day + " - " + dateFormat.formatDate(data.get(0)) + ":");
+                day++;
+            }
+            else {
+                int min = Integer.parseInt(data.get(i).replaceAll("[^0-9]+", ""));
+                Duration dur = Duration.ofMinutes(min);
 
-                if (!afterNoon && startHour != 12) {
-                    hm = String.format("%02d:%02d%s", startHour, startMin, "AM ");
-                } else {
-                    hm = String.format("%02d:%02d%s", startHour, startMin, "PM ");
+                int nextMin = 0;
+                if(i != data.size()-1){
+                    nextMin = Integer.parseInt(data.get(i+1).replaceAll("[^0-9]+", ""));
+                }
+                Duration dur2 = Duration.ofMinutes(nextMin);
+
+                if (hour != 12 && !afterNoon) {
+                    time = String.format("%02d:%02d%s", hour, minute, "AM ");
+                }
+                else {
+                    if (hour == 12 && minute >= 0) { //พักเที่ยง
+                        queue.add("12:00PM Lunch");
+                        hour = 1;
+                        minute = 0;
+                        afterNoon = true;
+                    }
+                    time = String.format("%02d:%02d%s", hour, minute, "PM ");
                 }
 
-                if (startHour == 12 && startMin >= 0) {
-                    queue.add(hm + "Lunch");
-                    startHour = 1;
-                    afterNoon = true;
-                    hm = String.format("%02d:%02d%s", startHour, startMin, "PM ");
-                }
+                queue.add(time + data.get(i));
 
-                queue.add(hm + data.get(i));
+                // ถ้าตอนบ่ายชั่วโมงต่อไปเวลา 4โมง และต่อไปนาทียังน้อยกว่า 60นาที
+                if(hour + dur.toHours() + dur2.toHours() == 4 && minute + dur.toMinutesPart() + dur2.toMinutesPart() < 60 && afterNoon) {
+                    minute += dur.toMinutesPart();
+                    //ถ้าเป็นตัวสุดท้ายที่จะหมดวัน
+                    if(i == data.size() - 1){
+                        queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
+                        hour = 9;
+                        minute = 0;
+                        afterNoon = false;
+                    }
+                }
+                // ถ้าตอนบ่ายชั่วโมงเวลามากกว่าเท่ากับ 4โมง และนาทียังน้อยกว่าเท่ากับ 60นาที
+                else if(hour + dur.toHours() >= 4 && minute + dur.toMinutesPart() <= 60 && afterNoon) {
+                    // ถ้านาทีรวมกันเท่ากับ 60นาทีให้ปัดเป็นชั่วโมง
+                    if(minute + dur.toMinutesPart() == 60){
+                        hour += dur.toHours() + 1;
+                        minute += dur.toMinutesPart() - 60;
+                    } else {
+                        hour += dur.toHours();
+                        minute += dur.toMinutesPart();
+                    }
 
-                if (startHour != 12 && startMin + dur.toMinutesPart() >= 60) {
-                    startHour += dur.toHours() + 1;
-                    startMin += dur.toMinutesPart() - 60;
-                }
-                else if(startHour + dur.toHours() >= 4 && startMin + dur.toMinutesPart() < 60 && afterNoon && i == data.size() - 2) {
-                    startMin += dur.toMinutesPart();
-                }
-                else if(startHour + dur.toHours() == 4 && startMin <= 59 && afterNoon) {
-                    queue.add(String.format("%02d:%02d%s", startHour + dur.toHours(), startMin + dur.toMinutesPart(), "PM Networking Event"));
+                    queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
+                    // ถ้าไม่ใช่ตัวสุดท้าย
                     if (!(i == data.size() - 1)) {
-                        String nextDay = Arrays.stream(tomorrow.split("/")).collect(Collectors.joining("-"));
                         queue.add("Day "+ day + " - " + tomorrow + ":");
+                        String nextDay = String.join("-", tomorrow.split("/"));
                         tomorrow = dateFormat.formatDate(dateFormat.getTomorrow(nextDay));
                         day++;
                     }
-                    startHour = 9;
-                    startMin = 0;
+                    hour = 9;
+                    minute = 0;
                     afterNoon = false;
                 }
-                else {
-                    startHour += dur.toHours();
-                    startMin += dur.toMinutesPart();
+                // ถ้าไม่ใช่เที่ยง และนาทีรวมแล้วได้มากกว่าเท่ากับ 60
+                else if (hour != 12 && minute + dur.toMinutesPart() >= 60) {
+                    hour += dur.toHours() + 1;
+                    minute += dur.toMinutesPart() - 60;
                 }
-            } else {
-                queue.add("Day " + day + " - " + dateFormat.formatDate(date) + ":");
-                day++;
+                else {
+                    hour += dur.toHours();
+                    minute += dur.toMinutesPart();
+                }
             }
         }
         queue.forEach(System.out::println);

@@ -17,11 +17,17 @@ public class Files {
         }
     }
 
-    public void readFile(File fileToRead) throws FileNotFoundException {
+    public void readFile(File fileToRead) {
         try(Scanner scanner = new Scanner(fileToRead)){
             while(scanner.hasNext()){
                 dataList.add(scanner.nextLine());
             }
+        } catch (FileNotFoundException e) {
+            System.out.println("File name " + fileToRead.getName() + " was not found.");
         }
+    }
+
+    public List<String> getDataList() {
+        return dataList;
     }
 }

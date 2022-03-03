@@ -8,7 +8,6 @@ import java.time.temporal.ChronoField;
 import java.util.*;
 
 public class DateFormat {
-
     public String formatDate (String date) {
         Stack<String> stack = new Stack<>();
         List<Integer> list = new ArrayList<>();
@@ -19,15 +18,16 @@ public class DateFormat {
             list.add(Integer.parseInt(s));
         }
 
-        LocalDate testDate = LocalDate.of(list.get(0), list.get(1), list.get(2));
+        int day = list.get(2);
+        LocalDate checkWeekend = LocalDate.of(list.get(0), list.get(1), day);
 
-        if (isWeekend(testDate) == 2) {
+        if (isWeekend(checkWeekend) == 2) { //saturday
             stack.pop();
-            stack.push(list.get(2) + 2 + "");
+            stack.push(day + 2 + "");
         }
-        if (isWeekend(testDate) == 1) {
+        if (isWeekend(checkWeekend) == 1) { //sunday
             stack.pop();
-            stack.push(list.get(2) + 1 + "");
+            stack.push(day + 1 + "");
         }
 
         while(!stack.empty()){
@@ -47,16 +47,16 @@ public class DateFormat {
         else return 0;
     }
 
-    public String getTomorrow(String test) {
+    public String getTomorrow(String today) {
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("dd-MM-yyyy");
         try {
-            if(test.substring(test.length() - 3).startsWith("-")){
-                cal.setTime(sdf.parse(test));
+            if(today.substring(today.length() - 3).startsWith("-")){
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                cal.setTime(sdf.parse(today));
                 cal.add(Calendar.DATE, 1);
             } else {
-                cal.setTime(sdf2.parse(test));
+                SimpleDateFormat sdf2 = new SimpleDateFormat("dd-MM-yyyy"); //more than 2 days
+                cal.setTime(sdf2.parse(today));
                 cal.add(Calendar.DATE, 1);
                 cal.add(Calendar.YEAR, -543);
             }

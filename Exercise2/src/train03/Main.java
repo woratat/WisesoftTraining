@@ -3,6 +3,7 @@ package train03;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -21,8 +22,6 @@ public class Main {
                 Files agenda = new Files();
                 agenda.readFile(fileToRead);
                 agenda.writeToFile(fileToWrite);
-            } catch (FileNotFoundException e) {
-                System.out.println("File named " + fileToRead.getName() + " is not found.");
             } catch (Exception e){
                 e.printStackTrace();
             }
