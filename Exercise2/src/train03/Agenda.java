@@ -48,7 +48,7 @@ public class Agenda {
                 // ถ้าตอนบ่ายชั่วโมงต่อไปเวลา 4โมง และต่อไปนาทียังน้อยกว่า 60นาที
                 if(hour + dur.toHours() + dur2.toHours() == 4 && minute + dur.toMinutesPart() + dur2.toMinutesPart() < 60 && afterNoon) {
                     minute += dur.toMinutesPart();
-                    //ถ้าเป็นตัวสุดท้ายที่จะหมดวัน
+                    //ถ้าเป็นตัวสุดท้าย
                     if(i == data.size() - 1){
                         queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
                         hour = 9;
@@ -58,20 +58,22 @@ public class Agenda {
                 }
                 // ถ้าตอนบ่ายชั่วโมงเวลามากกว่าเท่ากับ 4โมง และนาทียังน้อยกว่าเท่ากับ 60นาที
                 else if(hour + dur.toHours() >= 4 && minute + dur.toMinutesPart() <= 60 && afterNoon) {
-                    // ถ้านาทีรวมกันเท่ากับ 60นาทีให้ปัดเป็นชั่วโมง
-                    if(minute + dur.toMinutesPart() == 60){
+                    if(minute + dur.toMinutesPart() >= 60){
                         hour += dur.toHours() + 1;
                         minute += dur.toMinutesPart() - 60;
-                    } else {
-                        hour += dur.toHours();
-                        minute += dur.toMinutesPart();
                     }
 
+                    hour += dur.toHours();
+                    minute += dur.toMinutesPart();
                     queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
-                    // ถ้าไม่ใช่ตัวสุดท้าย
+
+                    // ถ้าไม่ใช่ตัวสุดท้ายใส่วันที่ต่อไป
                     if (!(i == data.size() - 1)) {
                         queue.add("Day "+ day + " - " + tomorrow + ":");
-                        String nextDay = String.join("-", tomorrow.split("/"));
+                        String[] arr = tomorrow.split("/");
+                        arr[2] = Integer.parseInt(arr[2]) - 543 + "";
+                        Collections.reverse(Arrays.asList(arr));
+                        String nextDay = String.join("-", arr);
                         tomorrow = dateFormat.formatDate(dateFormat.getTomorrow(nextDay));
                         day++;
                     }
@@ -79,7 +81,6 @@ public class Agenda {
                     minute = 0;
                     afterNoon = false;
                 }
-                // ถ้าไม่ใช่เที่ยง และนาทีรวมแล้วได้มากกว่าเท่ากับ 60
                 else if (hour != 12 && minute + dur.toMinutesPart() >= 60) {
                     hour += dur.toHours() + 1;
                     minute += dur.toMinutesPart() - 60;
