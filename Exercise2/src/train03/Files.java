@@ -17,7 +17,7 @@ public class Files {
         }
     }
 
-    public void readFile(File fileToRead) {
+    public List<String> readFile(File fileToRead) {
         try(Scanner scanner = new Scanner(fileToRead)){
             while(scanner.hasNext()){
                 dataList.add(scanner.nextLine());
@@ -25,9 +25,6 @@ public class Files {
         } catch (FileNotFoundException e) {
             System.out.println("File name " + fileToRead.getName() + " was not found.");
         }
-    }
-
-    public List<String> getDataList() {
         return dataList;
     }
 }

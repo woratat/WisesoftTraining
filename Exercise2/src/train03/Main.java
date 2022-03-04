@@ -15,7 +15,7 @@ public class Main {
         String formattedDate = date.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
 
         File fileToRead = new File(basePath + "/src/SampleFiles/schedule.txt");
-        File fileToWrite = new File(basePath + "/src/SampleFiles/" + formattedDate + " schedule.txt");
+        File fileToWrite = new File(basePath + "/src/SampleFiles/" + formattedDate + "-" + fileToRead.getName());
 
         if (fileToRead.getName().toLowerCase().endsWith(".txt")) {
             try {

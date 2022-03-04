@@ -2,23 +2,26 @@ package Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.Test;
 import train03.*;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 public class AgendaTest {
     private final Agenda agenda = new Agenda();
-    List<String> data = new Files().getDataList();
-    Queue<String> queue = new LinkedList<>();
+    File currentDir = new File (".");
+    String basePath = currentDir.getCanonicalPath();
+    File fileToRead = new File(basePath + "/src/SampleFiles/schedule.txt");
+
+    List<String> data = new Files().readFile(fileToRead);
+    Queue<String> queue = agenda.setAgenda(data);
+
+    public AgendaTest() throws IOException {}
 
     @Test
-    void setAgenda() {
-//        queue.addAll(data);
-//        Assertions.assertTrue(Arrays.equals(queue.toArray(), agenda.setAgenda(data).toArray()));
+    void testSetAgenda() throws Exception {
+        assertEquals("Day 1 - 25/2/2565:", queue.poll());
     }
 }

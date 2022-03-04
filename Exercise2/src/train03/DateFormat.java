@@ -52,4 +52,11 @@ public class DateFormat {
         }
         return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
     }
+
+    public String reverseFormat(String date){
+        String[] arr = date.split("/");
+        arr[2] = Integer.parseInt(arr[2]) - 543 + "";
+        Collections.reverse(Arrays.asList(arr));
+        return String.join("-", arr);
+    }
 }
