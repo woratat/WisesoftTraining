@@ -21,7 +21,7 @@ public class AgendaTest {
     public AgendaTest() throws IOException {}
 
     @Test
-    void testSetAgenda() throws Exception {
+    void setAgendaTest() throws Exception {
         assertEquals("Day 1 - 25/2/2565:", queue.poll());
     }
 }

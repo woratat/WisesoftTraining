@@ -11,17 +11,17 @@ public class DateFormatTest {
     String testDate = "2022-03-03";
 
     @Test
-    void formatDate() {
+    void formatDateTest() {
         assertEquals("03/03/2565", dateFormat.formatDate(testDate));
     }
 
     @Test
-    void isWeekend() {
+    void isWeekendTest() {
         assertEquals(0, dateFormat.isWeekend(LocalDate.of(2022, 3, 3)));
     }
 
     @Test
-    void getTomorrow() {
+    void getTomorrowTest() {
         assertEquals("2022-03-04", dateFormat.getTomorrow(testDate));
     }
 }

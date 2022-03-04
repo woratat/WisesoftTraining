@@ -1,8 +1,6 @@
 package train03;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 public class Files {
@@ -13,17 +11,18 @@ public class Files {
             Agenda agenda = new Agenda();
             agenda.setAgenda(dataList).forEach(fileWriter::println);
         } catch (FileNotFoundException e) {
-            System.out.println("File name " + fileToWrite.getName() + " was not found.");
+            e.printStackTrace();
         }
     }
 
     public List<String> readFile(File fileToRead) {
-        try(Scanner scanner = new Scanner(fileToRead)){
-            while(scanner.hasNext()){
-                dataList.add(scanner.nextLine());
+        try (BufferedReader br = new BufferedReader(new FileReader(fileToRead))) {
+            String strCurrentLine;
+            while ((strCurrentLine = br.readLine()) != null) {
+                dataList.add(strCurrentLine);
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("File name " + fileToRead.getName() + " was not found.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return dataList;
     }
