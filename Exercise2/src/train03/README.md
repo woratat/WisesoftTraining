@@ -17,4 +17,7 @@
 <img width="462" alt="Screenshot 2022-03-04 112212" src="https://user-images.githubusercontent.com/84006033/156699415-678b58bd-f137-4372-84d8-ceabf922f31d.png"><br />
 
 # แผนผัง
-![flowchart](https://user-images.githubusercontent.com/84006033/156701578-733a42d1-756a-400d-b8b1-f220e1aaaa9b.png)
+**Flowchart**<br />
+![flowchart](https://user-images.githubusercontent.com/84006033/156701578-733a42d1-756a-400d-b8b1-f220e1aaaa9b.png)<br />
+**Sequence Diagram**<br />
+![Untitled Diagram drawio](https://user-images.githubusercontent.com/84006033/156703939-ba6d15a6-965f-474a-a20c-ee6fc77df4ef.png)<br />
