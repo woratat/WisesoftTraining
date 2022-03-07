@@ -17,10 +17,10 @@ public class DateFormat {
         int day = list.get(2);
         LocalDate checkWeekend = LocalDate.of(list.get(0), list.get(1), day);
 
-        if (isWeekend(checkWeekend) == 2) { //saturday
+        if (isWeekend(checkWeekend) == 2) {
             list.set(2, day + 2);
         }
-        if (isWeekend(checkWeekend) == 1) { //sunday
+        if (isWeekend(checkWeekend) == 1) {
             list.set(2, day + 1);
         }
 

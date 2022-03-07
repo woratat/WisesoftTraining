@@ -12,9 +12,9 @@ public class Agenda {
         String time;
         boolean afterNoon = false;
         Queue<String> queue = new ArrayDeque<>();
-        DateFormat dateFormat = new DateFormat();
-        String startDay = dateFormat.formatDate(data.get(0));
-        String tomorrow = dateFormat.reverseFormat(startDay);
+        DateFormat df = new DateFormat();
+        String startDay = df.formatDate(data.get(0));
+        String nextDay = df.reverseFormat(startDay);
 
         for (int i = 0; i < data.size(); i++) {
             if (!data.get(i).endsWith("min")) {
@@ -22,39 +22,37 @@ public class Agenda {
                 day++;
             }
             else {
-                int min = Integer.parseInt(data.get(i).replaceAll("[^0-9]+", ""));
-                Duration dur = Duration.ofMinutes(min);
+                Duration dur = Time.getMin(data.get(i));
 
-                int nextMin = 0;
+                Duration nextDur = Duration.ofMinutes(0);
                 if(i != data.size()-1){
-                    nextMin = Integer.parseInt(data.get(i+1).replaceAll("[^0-9]+", ""));
+                    nextDur = Time.getMin(data.get(i+1));
                 }
-                Duration dur2 = Duration.ofMinutes(nextMin);
 
                 if (hour != 12 && !afterNoon) {
-                    time = String.format("%02d:%02d%s", hour, minute, "AM ");
+                    time = Time.getTime(hour, minute, "AM ");
                 }
                 else {
                     if (hour == 12 && minute >= 0) { //พักเที่ยง
-                        queue.add("12:00PM Lunch");
+                        queue.add(Time.getTime(12, 0, "PM Lunch"));
                         hour = 1;
                         minute = 0;
                         afterNoon = true;
                     }
-                    time = String.format("%02d:%02d%s", hour, minute, "PM ");
+                    time = Time.getTime(hour, minute, "PM ");
                 }
 
                 queue.add(time + data.get(i));
 
-                // ถ้าตอนบ่ายชั่วโมงต่อไปเวลา 4โมง และต่อไปนาทียังน้อยกว่า 60นาที
-                if(hour + dur.toHours() + dur2.toHours() == 4 && minute + dur.toMinutesPart() + dur2.toMinutesPart() < 60 && afterNoon) {
+                // ถ้า 4โมง และต่อไปนาทียังน้อยกว่า 60นาที
+                if(hour + dur.toHours() + nextDur.toHours() == 4 && minute + dur.toMinutesPart() + nextDur.toMinutesPart() < 60 && afterNoon) {
                     minute += dur.toMinutesPart();
                     //ถ้าเป็นตัวสุดท้าย
                     if(i == data.size() - 1){
-                        queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
+                        queue.add(Time.getTime(hour, minute, "PM Networking Event"));
                     }
                 }
-                // ถ้าตอนบ่ายชั่วโมงเวลามากกว่าเท่ากับ 4โมง และนาทียังน้อยกว่าเท่ากับ 60นาที
+                // ถ้ามากกว่าเท่ากับ 4โมง และนาทียังน้อยกว่าเท่ากับ 60นาที
                 else if(hour + dur.toHours() >= 4 && minute + dur.toMinutesPart() <= 60 && afterNoon) {
                     if(minute + dur.toMinutesPart() >= 60){
                         hour += dur.toHours() + 1;
@@ -64,19 +62,19 @@ public class Agenda {
                     hour += dur.toHours();
                     minute += dur.toMinutesPart();
 
-                    // ถ้าไม่ใช่ตัวสุดท้ายใส่วันที่ต่อไป
+                    // ถ้าไม่ใช่ตัวสุดท้ายใส่วันต่อไป
                     if (!(i == data.size() - 1)) {
-                        queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
-                        tomorrow = dateFormat.formatDate(dateFormat.getTomorrow(tomorrow));
-                        queue.add("Day "+ day + " - " + tomorrow + ":");
-                        tomorrow = dateFormat.reverseFormat(tomorrow);
+                        queue.add(Time.getTime(hour, minute, "PM Networking Event"));
+                        nextDay = df.formatDate(df.getTomorrow(nextDay)); //28/2/2565
+                        queue.add("Day "+ day + " - " + nextDay + ":");
+                        nextDay = df.reverseFormat(nextDay); //2022-02-28
                         day++;
                     }
                     hour = 9;
                     minute = 0;
                     afterNoon = false;
                 }
-                else if (hour != 12 && minute + dur.toMinutesPart() >= 60) {
+                else if (minute + dur.toMinutesPart() >= 60) {
                     hour += dur.toHours() + 1;
                     minute += dur.toMinutesPart() - 60;
                 }
