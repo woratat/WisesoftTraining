@@ -1,9 +1,7 @@
 package train03;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 

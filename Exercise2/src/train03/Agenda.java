@@ -13,11 +13,12 @@ public class Agenda {
         boolean afterNoon = false;
         Queue<String> queue = new ArrayDeque<>();
         DateFormat dateFormat = new DateFormat();
-        String tomorrow = dateFormat.formatDate(dateFormat.getTomorrow(data.get(0)));
+        String startDay = dateFormat.formatDate(data.get(0));
+        String tomorrow = dateFormat.reverseFormat(startDay);
 
         for (int i = 0; i < data.size(); i++) {
             if (!data.get(i).endsWith("min")) {
-                queue.add("Day " + day + " - " + dateFormat.formatDate(data.get(0)) + ":");
+                queue.add("Day " + day + " - " + startDay + ":");
                 day++;
             }
             else {
@@ -66,9 +67,9 @@ public class Agenda {
                     // ถ้าไม่ใช่ตัวสุดท้ายใส่วันที่ต่อไป
                     if (!(i == data.size() - 1)) {
                         queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
+                        tomorrow = dateFormat.formatDate(dateFormat.getTomorrow(tomorrow));
                         queue.add("Day "+ day + " - " + tomorrow + ":");
-                        String nextDay = dateFormat.reverseFormat(tomorrow);
-                        tomorrow = dateFormat.formatDate(dateFormat.getTomorrow(nextDay));
+                        tomorrow = dateFormat.reverseFormat(tomorrow);
                         day++;
                     }
                     hour = 9;
