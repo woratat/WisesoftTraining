@@ -51,9 +51,6 @@ public class Agenda {
                     //ถ้าเป็นตัวสุดท้าย
                     if(i == data.size() - 1){
                         queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
-                        hour = 9;
-                        minute = 0;
-                        afterNoon = false;
                     }
                 }
                 // ถ้าตอนบ่ายชั่วโมงเวลามากกว่าเท่ากับ 4โมง และนาทียังน้อยกว่าเท่ากับ 60นาที
@@ -65,15 +62,12 @@ public class Agenda {
 
                     hour += dur.toHours();
                     minute += dur.toMinutesPart();
-                    queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
 
                     // ถ้าไม่ใช่ตัวสุดท้ายใส่วันที่ต่อไป
                     if (!(i == data.size() - 1)) {
+                        queue.add(String.format("%02d:%02d%s", hour, minute, "PM Networking Event"));
                         queue.add("Day "+ day + " - " + tomorrow + ":");
-                        String[] arr = tomorrow.split("/");
-                        arr[2] = Integer.parseInt(arr[2]) - 543 + "";
-                        Collections.reverse(Arrays.asList(arr));
-                        String nextDay = String.join("-", arr);
+                        String nextDay = dateFormat.reverseFormat(tomorrow);
                         tomorrow = dateFormat.formatDate(dateFormat.getTomorrow(nextDay));
                         day++;
                     }
