@@ -10,7 +10,7 @@ import java.util.*;
 public class DateFormat {
     public String formatDate (String date) {
         List<Integer> list = new ArrayList<>();
-        String newDate = "";
+        StringBuilder formatted = new StringBuilder();
 
         Arrays.stream(date.split("-")).forEach(s -> list.add(Integer.parseInt(s)));
 
@@ -26,12 +26,12 @@ public class DateFormat {
 
         for (int i = list.size() - 1; i >= 0; i--){
             if(i == 0){
-                newDate += list.get(i) + 543;
+                formatted.append(list.get(0) + 543);
             } else {
-                newDate += list.get(i) + "/";
+                formatted.append(list.get(i)).append("/");
             }
         }
-        return newDate;
+        return formatted.toString();
     }
 
     public int isWeekend(LocalDate ld) {
