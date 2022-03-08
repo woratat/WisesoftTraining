@@ -44,23 +44,24 @@ public class Agenda {
 
                 queue.add(time + data.get(i));
 
-                // ถ้า 4โมง และต่อไปนาทียังน้อยกว่า 60นาที
-                if(hour + dur.toHours() + nextDur.toHours() == 4 && minute + dur.toMinutesPart() + nextDur.toMinutesPart() < 60 && afterNoon) {
-                    minute += dur.toMinutesPart();
-                    //ถ้าเป็นตัวสุดท้าย
-                    if(i == data.size() - 1){
+                hour += dur.toHours();
+                minute += dur.toMinutesPart();
+
+                // ถ้า 4โมง และต่อไปนาทียังน้อยกว่าเท่ากับ 60นาที
+                if(hour + nextDur.toHours() == 4 && minute + nextDur.toMinutesPart() <= 60 && afterNoon) {
+                    if(minute + nextDur.toMinutesPart() == 60 && i == data.size() - 1){
+                        queue.add(Time.getTime(++hour, minute-60, "PM Networking Event"));
+                    }
+                    else if(i == data.size() - 1) {
                         queue.add(Time.getTime(hour, minute, "PM Networking Event"));
                     }
                 }
-                // ถ้ามากกว่าเท่ากับ 4โมง และนาทียังน้อยกว่าเท่ากับ 60นาที
-                else if(hour + dur.toHours() >= 4 && minute + dur.toMinutesPart() <= 60 && afterNoon) {
-                    if(minute + dur.toMinutesPart() >= 60){
-                        hour += dur.toHours() + 1;
-                        minute += dur.toMinutesPart() - 60;
+                // ถ้า 4โมง และนาทียังน้อยกว่าเท่ากับ 60นาที
+                else if(hour == 4 && minute <= 60 && afterNoon) {
+                    if(minute == 60){
+                        hour++;
+                        minute -= 60;
                     }
-
-                    hour += dur.toHours();
-                    minute += dur.toMinutesPart();
 
                     // ถ้าไม่ใช่ตัวสุดท้ายใส่วันต่อไป
                     if (!(i == data.size() - 1)) {
@@ -74,13 +75,9 @@ public class Agenda {
                     minute = 0;
                     afterNoon = false;
                 }
-                else if (minute + dur.toMinutesPart() >= 60) {
-                    hour += dur.toHours() + 1;
-                    minute += dur.toMinutesPart() - 60;
-                }
-                else {
-                    hour += dur.toHours();
-                    minute += dur.toMinutesPart();
+                else if (minute >= 60) {
+                    hour++;
+                    minute -= 60;
                 }
             }
         }

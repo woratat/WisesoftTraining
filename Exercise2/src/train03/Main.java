@@ -17,9 +17,9 @@ public class Main {
 
         if (fileToRead.getName().toLowerCase().endsWith(".txt")) {
             try {
-                Files agenda = new Files();
-                agenda.readFile(fileToRead);
-                agenda.writeToFile(fileToWrite);
+                Files files = new Files();
+                files.readFile(fileToRead);
+                files.writeToFile(fileToWrite);
             } catch (Exception e){
                 e.printStackTrace();
             }
