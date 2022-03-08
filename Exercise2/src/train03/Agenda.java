@@ -4,9 +4,9 @@ import java.time.Duration;
 import java.util.*;
 
 public class Agenda {
-    int hour = 9;
-    int minute = 0;
-    int day = 1;
+    private int hour = 9;
+    private int minute = 0;
+    private int day = 1;
 
     public Queue<String> setAgenda(List<String> data) {
         String time;
@@ -25,7 +25,7 @@ public class Agenda {
                 Duration dur = Time.getMin(data.get(i));
 
                 Duration nextDur = Duration.ofMinutes(0);
-                if(i != data.size()-1){
+                if(i != data.size()-1) {
                     nextDur = Time.getMin(data.get(i+1));
                 }
 
@@ -66,7 +66,7 @@ public class Agenda {
                     // ถ้าไม่ใช่ตัวสุดท้ายใส่วันต่อไป
                     if (!(i == data.size() - 1)) {
                         queue.add(Time.getTime(hour, minute, "PM Networking Event"));
-                        nextDay = df.formatDate(df.getTomorrow(nextDay)); //28/2/2565
+                        nextDay = df.formatDate(df.getNextDay(nextDay)); //28/2/2565
                         queue.add("Day "+ day + " - " + nextDay + ":");
                         nextDay = df.reverseFormat(nextDay); //2022-02-28
                         day++;
