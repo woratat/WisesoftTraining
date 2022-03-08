@@ -20,4 +20,4 @@
 **Flowchart**<br />
 ![flowchart](https://user-images.githubusercontent.com/84006033/156701578-733a42d1-756a-400d-b8b1-f220e1aaaa9b.png)<br />
 **Sequence Diagram**<br />
-![Untitled Diagram drawio](https://user-images.githubusercontent.com/84006033/156703939-ba6d15a6-965f-474a-a20c-ee6fc77df4ef.png)<br />
+![new diagram](https://user-images.githubusercontent.com/84006033/157244797-6392e201-c4c3-4013-82dc-bfe3bbfedda8.png)
