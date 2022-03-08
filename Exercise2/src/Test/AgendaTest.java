@@ -22,6 +22,6 @@ public class AgendaTest {
 
     @Test
     void setAgendaTest() throws Exception {
-        assertEquals("Day 1 - 25/2/2565:", queue.poll());
+        assertEquals(true, queue.poll().startsWith("Day 1"));
     }
 }
