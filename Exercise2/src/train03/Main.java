@@ -1,9 +1,11 @@
 package train03;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.InputMismatchException;
 
 public class Main {
     public static void main(String[] args){
@@ -18,7 +20,7 @@ public class Main {
                 files.readFile(fileToRead);
                 files.writeToFile(fileToWrite);
             } catch (Exception e){
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
     }

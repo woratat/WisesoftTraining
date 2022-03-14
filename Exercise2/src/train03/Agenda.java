@@ -1,90 +1,56 @@
 package train03;
 
-import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static train03.DateFormat.*;
+
 public class Agenda {
-    private int hour = 9;
-    private int minute = 0;
-    private int day = 1;
+    int hour = 0;
+    int minute = 0;
+    int day = 1;
 
-    public Queue<String> setAgenda(List<String> data) {
-        DateFormat df = new DateFormat();
-        Queue<String> queue = new ArrayDeque<>();
-        boolean afterNoon = false;
-        String time;
-        String startDay = df.formatDate(data.get(0));
-        String nextDay = df.reverseFormat(startDay);
+    public List<Object> setAgenda(List<Object> data) {
+        String date = data.get(0).toString();
+        List<Object> list = new ArrayList<>();
+        LocalTime localTime = LocalTime.of(9,0);
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mma", Locale.US); //HH != hh
 
-        for (int i = 0; i < data.size(); i++) {
-            if (!data.get(i).endsWith("min")) {
-                queue.add("Day " + day + " - " + startDay + ":");
+        list.add("Day " + day + " - " + formatDate(date) + ":");
+        day++;
+
+        for (int i=1; i< data.size(); i++){
+            list.add(df.format(localTime) + " " + data.get(i));
+            int min = Integer.parseInt(data.get(i).toString().replaceAll("[^0-9]+", ""));
+
+            int nextMin = 0;
+            if(i != data.size()-1){
+                nextMin = Integer.parseInt(data.get(i+1).toString().replaceAll("[^0-9]+", ""));
+            }
+            int nextHour = nextMin/60;
+            int nextMinute = nextMin%60;
+
+            hour = min/60;
+            minute = min%60;
+            localTime = localTime.plusHours(hour).plusMinutes(minute);
+
+            if(localTime.equals(LocalTime.NOON)){
+                list.add(df.format(localTime) + " Lunch");
+                localTime = localTime.plusHours(1);
+            }
+            if(localTime.plusHours(nextHour).plusMinutes(nextMinute).isAfter(LocalTime.of(17,0))){
+                list.add(df.format(localTime) + " Networking Event");
+                date = getNextDay(date);
+                list.add("Day " + day + " - " + formatDate(date) + ":");
+                localTime = LocalTime.of(9,0);
                 day++;
             }
-            else {
-                Duration dur = Time.getMin(data.get(i));
-
-                Duration nextDur = Duration.ofMinutes(0);
-                if(i != data.size()-1) {
-                    nextDur = Time.getMin(data.get(i+1));
-                }
-
-                if (hour != 12 && !afterNoon) {
-                    time = Time.getTime(hour, minute, "AM ");
-                }
-                else {
-                    if (hour == 12 && minute >= 0) {
-                        queue.add(Time.getTime(12, 0, "PM Lunch"));
-                        hour = 1;
-                        minute = 0;
-                        afterNoon = true;
-                    }
-                    time = Time.getTime(hour, minute, "PM ");
-                }
-
-                queue.add(time + data.get(i));
-
-                hour += dur.toHours();
-                minute += dur.toMinutesPart();
-
-                // ถ้า 4โมง และต่อไปนาทียังน้อยกว่าเท่ากับ 60นาที
-                if(hour + nextDur.toHours() == 4 && minute + nextDur.toMinutesPart() <= 60 && afterNoon) {
-                    if(minute + nextDur.toMinutesPart() >= 60){
-                        hour++;
-                        minute-=60;
-                    }
-                    else if(minute + nextDur.toMinutesPart() == 60 && i == data.size() - 1){
-                        queue.add(Time.getTime(++hour, minute-60, "PM Networking Event"));
-                    }
-                    else if(i == data.size() - 1) {
-                        queue.add(Time.getTime(hour, minute, "PM Networking Event"));
-                    }
-                }
-                else if(hour >= 4 && minute <= 60 && afterNoon) {
-                    if(minute == 60){
-                        hour++;
-                        minute -= 60;
-                    }
-
-                    // ถ้าไม่ใช่ตัวสุดท้ายใส่วันต่อไป
-                    if (!(i == data.size() - 1)) {
-                        queue.add(Time.getTime(hour, minute, "PM Networking Event"));
-                        nextDay = df.formatDate(df.getNextDay(nextDay)); //28/2/2565
-                        queue.add("Day "+ day + " - " + nextDay + ":");
-                        nextDay = df.reverseFormat(nextDay); //2022-02-28
-                        day++;
-                    }
-                    hour = 9;
-                    minute = 0;
-                    afterNoon = false;
-                }
-                else if (minute >= 60) {
-                    hour++;
-                    minute -= 60;
-                }
+            if(i == data.size() - 1){
+                list.add(df.format(localTime) + " Networking Event");
             }
         }
-        queue.forEach(System.out::println);
-        return queue;
+        list.forEach(System.out::println);
+        return list;
     }
 }

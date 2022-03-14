@@ -4,26 +4,26 @@ import java.io.*;
 import java.util.*;
 
 public class Files {
-    List<String> dataList = new ArrayList<>();
+    List<Object> dataList = new ArrayList<>();
 
-    public List<String> readFile(File fileToRead) {
+    public void readFile(File fileToRead) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileToRead))) {
             String strCurrentLine;
             while ((strCurrentLine = br.readLine()) != null) {
                 dataList.add(strCurrentLine);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
-        return dataList;
     }
 
     public void writeToFile(File fileToWrite) {
         try (PrintWriter fileWriter = new PrintWriter(fileToWrite)){
             Agenda agenda = new Agenda();
-            agenda.setAgenda(dataList).forEach(fileWriter::println);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            List<Object> list = agenda.setAgenda(dataList);
+            list.forEach(fileWriter::println);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 }
