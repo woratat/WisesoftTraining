@@ -6,15 +6,6 @@ import java.util.*;
 public class Files {
     List<String> dataList = new ArrayList<>();
 
-    public void writeToFile(File fileToWrite) {
-        try (PrintWriter fileWriter = new PrintWriter(fileToWrite)){
-            Agenda agenda = new Agenda();
-            agenda.setAgenda(dataList).forEach(fileWriter::println);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<String> readFile(File fileToRead) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileToRead))) {
             String strCurrentLine;
@@ -25,5 +16,14 @@ public class Files {
             e.printStackTrace();
         }
         return dataList;
+    }
+
+    public void writeToFile(File fileToWrite) {
+        try (PrintWriter fileWriter = new PrintWriter(fileToWrite)){
+            Agenda agenda = new Agenda();
+            agenda.setAgenda(dataList).forEach(fileWriter::println);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

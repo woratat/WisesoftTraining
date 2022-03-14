@@ -9,10 +9,10 @@ public class Agenda {
     private int day = 1;
 
     public Queue<String> setAgenda(List<String> data) {
-        String time;
-        boolean afterNoon = false;
-        Queue<String> queue = new ArrayDeque<>();
         DateFormat df = new DateFormat();
+        Queue<String> queue = new ArrayDeque<>();
+        boolean afterNoon = false;
+        String time;
         String startDay = df.formatDate(data.get(0));
         String nextDay = df.reverseFormat(startDay);
 
@@ -33,7 +33,7 @@ public class Agenda {
                     time = Time.getTime(hour, minute, "AM ");
                 }
                 else {
-                    if (hour == 12 && minute >= 0) { //พักเที่ยง
+                    if (hour == 12 && minute >= 0) {
                         queue.add(Time.getTime(12, 0, "PM Lunch"));
                         hour = 1;
                         minute = 0;
@@ -49,15 +49,18 @@ public class Agenda {
 
                 // ถ้า 4โมง และต่อไปนาทียังน้อยกว่าเท่ากับ 60นาที
                 if(hour + nextDur.toHours() == 4 && minute + nextDur.toMinutesPart() <= 60 && afterNoon) {
-                    if(minute + nextDur.toMinutesPart() == 60 && i == data.size() - 1){
+                    if(minute + nextDur.toMinutesPart() >= 60){
+                        hour++;
+                        minute-=60;
+                    }
+                    else if(minute + nextDur.toMinutesPart() == 60 && i == data.size() - 1){
                         queue.add(Time.getTime(++hour, minute-60, "PM Networking Event"));
                     }
                     else if(i == data.size() - 1) {
                         queue.add(Time.getTime(hour, minute, "PM Networking Event"));
                     }
                 }
-                // ถ้า 4โมง และนาทียังน้อยกว่าเท่ากับ 60นาที
-                else if(hour == 4 && minute <= 60 && afterNoon) {
+                else if(hour >= 4 && minute <= 60 && afterNoon) {
                     if(minute == 60){
                         hour++;
                         minute -= 60;
