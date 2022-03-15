@@ -18,10 +18,11 @@ public class Files {
     }
 
     public void writeToFile(File fileToWrite) {
-        try (PrintWriter fileWriter = new PrintWriter(fileToWrite)){
+        try (PrintWriter fileWriter = new PrintWriter(fileToWrite)) {
             Agenda agenda = new Agenda();
             List<Object> list = agenda.setAgenda(dataList);
             list.forEach(fileWriter::println);
+            list.forEach(System.out::println);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

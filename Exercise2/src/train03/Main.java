@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
 
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Files files = new Files();
         LocalDate date = LocalDate.now();
         String formattedDate = date.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
@@ -19,7 +19,7 @@ public class Main {
             try {
                 files.readFile(fileToRead);
                 files.writeToFile(fileToWrite);
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
