@@ -7,16 +7,14 @@ import java.util.*;
 import static train03.DateFormat.*;
 
 public class Agenda {
-    boolean afterNoon = false;
-    int hour = 0;
-    int minute = 0;
-    int day = 1;
+    private boolean morning = false;
+    private int day = 1;
 
     public List<Object> setAgenda(List<Object> data) {
-        String date = data.get(0).toString();
-        List<Object> list = new ArrayList<>();
-        LocalTime localTime = LocalTime.of(9, 0);
         DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mma", Locale.US);
+        LocalTime localTime = LocalTime.of(9, 0);
+        List<Object> list = new ArrayList<>();
+        String date = data.get(0).toString();
 
         list.add("Day " + day + " - " + formatDate(date) + ":");
         day++;
@@ -25,28 +23,27 @@ public class Agenda {
             list.add(df.format(localTime) + " " + data.get(i));
             int min = getMinute(data.get(i));
 
-            int nextMin = 0;
+            int hour = min / 60;
+            int minute = min % 60;
+            localTime = localTime.plusHours(hour).plusMinutes(minute);
+
             if (i != data.size() - 1)
-                nextMin = getMinute(data.get(i + 1));
+                min = getMinute(data.get(i + 1));
 
             hour = min / 60;
             minute = min % 60;
-            localTime = localTime.plusHours(hour).plusMinutes(minute);
 
-            hour = nextMin / 60;
-            minute = nextMin % 60;
-
-            if (localTime.equals(LocalTime.NOON) || (localTime.isAfter(LocalTime.NOON) && afterNoon)) {
+            if (localTime.equals(LocalTime.NOON) || (localTime.isAfter(LocalTime.NOON) && morning)) {
                 list.add(df.format(localTime) + " Lunch");
                 localTime = localTime.plusHours(1);
-                afterNoon = false;
+                morning = false;
             }
             if (localTime.plusHours(hour).plusMinutes(minute).isAfter(LocalTime.of(17, 0))) {
-                list.add(df.format(localTime) + " Networking Event");
                 date = getNextDay(date);
+                list.add(df.format(localTime) + " Networking Event");
                 list.add("Day " + day + " - " + formatDate(date) + ":");
                 localTime = LocalTime.of(9, 0);
-                afterNoon = true;
+                morning = true;
                 day++;
             }
             if (i == (data.size() - 1))

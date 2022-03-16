@@ -20,7 +20,7 @@ public class Main {
                 files.readFile(fileToRead);
                 files.writeToFile(fileToWrite);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println("Check the filename and try again.");
             }
         }
     }

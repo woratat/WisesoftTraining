@@ -13,7 +13,7 @@ public class Files {
                 dataList.add(strCurrentLine);
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("File not found.");
         }
     }
 
@@ -23,7 +23,7 @@ public class Files {
             List<Object> list = agenda.setAgenda(dataList);
             list.forEach(fileWriter::println);
             list.forEach(System.out::println);
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
