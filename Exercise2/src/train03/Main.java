@@ -9,7 +9,6 @@ import java.util.InputMismatchException;
 
 public class Main {
     public static void main(String[] args) {
-        Files files = new Files();
         LocalDate date = LocalDate.now();
         String formattedDate = date.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
 
@@ -17,6 +16,7 @@ public class Main {
         File fileToWrite = new File(System.getProperty("user.dir") + "/src/SampleFiles/" + formattedDate + "-" + fileToRead.getName());
         if (fileToRead.getName().toLowerCase().endsWith(".txt")) {
             try {
+                Files files = new Files();
                 files.readFile(fileToRead);
                 files.writeToFile(fileToWrite);
             } catch (Exception e) {

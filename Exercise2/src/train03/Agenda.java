@@ -7,31 +7,20 @@ import java.util.*;
 import static train03.DateFormat.*;
 
 public class Agenda {
-    private boolean morning = false;
-    private int day = 1;
-
-    public List<Object> setAgenda(List<Object> data) {
+    public List<Object> setAgenda(List<InputObj> data, String date) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mma", Locale.US);
         LocalTime localTime = LocalTime.of(9, 0);
         List<Object> list = new ArrayList<>();
-        String date = data.get(0).toString();
+        boolean morning = false;
+        int day = 1;
 
         list.add("Day " + day + " - " + formatDate(date) + ":");
         day++;
 
         for (int i = 1; i < data.size(); i++) {
-            list.add(df.format(localTime) + " " + data.get(i));
-            int min = getMinute(data.get(i));
-
+            int min = data.get(i).getTime();
             int hour = min / 60;
             int minute = min % 60;
-            localTime = localTime.plusHours(hour).plusMinutes(minute);
-
-            if (i != data.size() - 1)
-                min = getMinute(data.get(i + 1));
-
-            hour = min / 60;
-            minute = min % 60;
 
             if (localTime.equals(LocalTime.NOON) || (localTime.isAfter(LocalTime.NOON) && morning)) {
                 list.add(df.format(localTime) + " Lunch");
@@ -46,13 +35,11 @@ public class Agenda {
                 morning = true;
                 day++;
             }
+            list.add(df.format(localTime) + " " + data.get(i).getTitle());
+            localTime = localTime.plusHours(hour).plusMinutes(minute);
             if (i == (data.size() - 1))
                 list.add(df.format(localTime) + " Networking Event");
         }
         return list;
-    }
-
-    public int getMinute(Object data) {
-        return Integer.parseInt(data.toString().replaceAll("[^0-9]+", ""));
     }
 }
