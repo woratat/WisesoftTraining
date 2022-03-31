@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <link>
+    <title>Exercise 4</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <!-- <input id="fileUpload" name="fileUpload" type="file" accept=".txt,.json" />
+    <button id="uploadButton" onclick="uploadFile()">Upload</button>
+    <pre id="json"></pre> -->
+
+<div class="file-upload">
+  <div class="file-select">
+    <div class="file-select-button" id="fileName">Choose File</div>
+    <div class="file-select-name" id="noFile">No file chosen...</div> 
+    <input type="file" name="fileUpload" id="fileUpload" accept=".txt,.json" onchange="showFileName()">
+  </div>
+  <button id="uploadButton" onclick="uploadFile()">Upload</button>
+  <button id="clearFile" onclick="clearFile()">Clear</button>
+  <div class="jsonInput">
+    <textarea id="jsonInput" name="jsonInput" rows="9" cols="50" placeholder="JSON input text..."></textarea>
+    <br><br>
+  </div>
+  <button id="jsonButton" onclick="uploadJson()">Upload</button>
+  <button id="clearButton" onclick="clearText()">Clear</button>
+</div>
+
+<div class="display">
+  <pre id="json"></pre>
+</div>
+
+    <script>
+      async function uploadFile() {
+        if (fileUpload.files[0] != undefined) {
+          let formData = new FormData();
+          formData.append("file", fileUpload.files[0]);
+          let response = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+          const myJson = await response.json();
+          if (response.status == 200) {
+            alert("File uploaded successfully.");
+            document.querySelector("#json").textContent = JSON.stringify(myJson,null,2);
+            // const fileInput = document.querySelector("#fileUpload");
+            // fileInput.value = "";
+            clearFile();
+          }
+        }else{
+          alert("Please select file before submiting.");
+        }
+      }
+
+      function uploadJson(){
+        const textArea = document.getElementById("jsonInput");
+        if(!textArea.value){
+          alert("Please type something before submiting.");
+        }
+        console.log(isJsonString(textArea.value));
+      }
+
+      function isJsonString(str) {
+        try {
+          JSON.parse(str);
+        } catch (e) {
+          return false;
+        }
+        return true;
+      }
+
+      function showFileName(){
+        if(fileUpload.files[0] != undefined){
+          const noFile = document.querySelector("#noFile");
+          noFile.textContent = `${fileUpload.files[0].name}`;
+        }
+      }
+
+      function clearText(){
+        document.getElementById("jsonInput").value = "";
+      }
+      
+      function clearFile(){
+        document.getElementById("fileUpload").value = "";
+        document.getElementById("noFile").textContent = "No file chosen...";
+      }
+    </script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
