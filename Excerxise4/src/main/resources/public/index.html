@@ -5,9 +5,6 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <!-- <input id="fileUpload" name="fileUpload" type="file" accept=".txt,.json" />
-    <button id="uploadButton" onclick="uploadFile()">Upload</button>
-    <pre id="json"></pre> -->
 
 <div class="file-upload">
   <div class="file-select">
@@ -42,8 +39,6 @@
           if (response.status == 200) {
             alert("File uploaded successfully.");
             document.querySelector("#json").textContent = JSON.stringify(myJson,null,2);
-            // const fileInput = document.querySelector("#fileUpload");
-            // fileInput.value = "";
             clearFile();
           }
         }else{
