@@ -11,10 +11,9 @@ import java.time.chrono.ThaiBuddhistDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
@@ -25,17 +24,16 @@ import com.exercise4.response.Exercise4Response;
 @Service
 public class Exercise4Service {
 
-	public List<Exercise4Response> readFile(File fileToRead) {
+	public JSONObject readFile(File fileToRead) {
 		List<Exercise4Response> dataList = new ArrayList<>();
-		String date = "";
+		JSONObject jsonObject = new JSONObject();
 		int i = 0;
 		try (BufferedReader br = new BufferedReader(new FileReader(fileToRead))) {
 			String strCurrentLine;
 			while ((strCurrentLine = br.readLine()) != null) {
 				Exercise4Response er = new Exercise4Response();
 				if (i == 0) {
-					date = strCurrentLine;
-					er.setDate(date);
+					jsonObject.put("date", strCurrentLine);
 					++i;
 				} else {
 					int time = Integer.parseInt(strCurrentLine.replaceAll("[^0-9]+", ""));
@@ -43,18 +41,21 @@ public class Exercise4Service {
 					er.setDuration(time);
 				}
 				dataList.add(er);
+				jsonObject.put("list", dataList);
 			}
 		} catch (IOException e) {
 			System.out.println("File not found.");
 		}
-		return dataList;
+
+		return jsonObject;
 	}
 
-	public List<JSONObject> setAgenda(List<Exercise4Response> data) {
+	public List<JSONObject> setAgenda(JSONObject jsonObject) {
+		List<Exercise4Response> data = (List<Exercise4Response>) jsonObject.get("list");
 		DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mma", Locale.US);
 		LocalTime localTime = LocalTime.of(9, 0);
 		List<Exercise4Response> list = new ArrayList<>();
-		String date = data.get(0).getDate();
+		String date = jsonObject.get("date").toString();
 		boolean morning = false;
 
 		for (int i = 1; i < data.size(); i++) {
@@ -80,8 +81,8 @@ public class Exercise4Service {
 				list.add(new Exercise4Response("Networking Event", df.format(localTime), date, 0));
 			}
 		}
-		List<JSONObject> jsonData = StringCreateJson(list);
-		return jsonData;
+
+		return CreateJson(list);
 	}
 
 	public static String formatDate(String date) {
@@ -109,74 +110,41 @@ public class Exercise4Service {
 		return String.valueOf(ld);
 	}
 
-	public List<JSONObject> StringCreateJson(List<Exercise4Response> list) {
-		// int i = 1;
-		// List<JSONObject> jsonObjects1 = new ArrayList<JSONObject>();
-		// List<JSONObject> jsonObjects2 = new ArrayList<JSONObject>();
-		// List<JSONObject> data = new ArrayList<>();
-		// JSONObject jsonObject = new JSONObject();
-		// jsonObject.put("day", i);
-		// jsonObject.put("date", list.get(0).getDate());
-		// i++;
-
-		// for (int j = 0; j < list.size(); j++) {
-		// JSONObject jsonObject1 = new JSONObject();
-		// JSONObject jsonObject2 = new JSONObject();
-		// if(list.get(j).getDate() == list.get(0).getDate()){
-		// jsonObject1.put("title", list.get(j).getTitle());
-		// jsonObject1.put("time", list.get(j).getTime());
-		// jsonObject1.put("duration", list.get(j).getDuration());
-		// jsonObjects1.add(jsonObject1);
-		// }else{
-		// jsonObject2.put("title", list.get(j).getTitle());
-		// jsonObject2.put("time", list.get(j).getTime());
-		// jsonObject2.put("duration", list.get(j).getDuration());
-		// jsonObjects2.add(jsonObject2);
-		// }
-		// }
-		// jsonObject.put("list", jsonObjects1);
-		// data.add(jsonObject);
-		// System.out.println(data);
-
-		List<JSONObject> jsonObjects = new ArrayList<>();
-		List<JSONObject> jsonObjects2 = new ArrayList<JSONObject>();
+	public List<JSONObject> CreateJson(List<Exercise4Response> list) {
+		List<String> myDate = new ArrayList<>();
 		List<JSONObject> data = new ArrayList<>();
 		String date = list.get(0).getDate();
-		boolean test = true;
+		list.stream().collect(Collectors.toMap(Exercise4Response::getDate, p -> p, (p, q) -> p)).values()
+				.forEach(e -> myDate.add(e.getDate()));
+		swap(myDate, 0, 1);
 
-    Collection<Exercise4Response> map = list.stream().collect(Collectors.toMap(Exercise4Response::getDate, p -> p, (p, q) -> p)).values();
-
-		for (int i = 1; i < map.size()+1; i++) {
+		for (int i = 0; i <= myDate.size() - 1; i++) {
+			List<JSONObject> jsonObjects = new ArrayList<>();
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("day", i);
+			jsonObject.put("day", i + 1);
 			jsonObject.put("date", date);
 
 			for (int j = 0; j < list.size(); j++) {
-				JSONObject jsonObject1 = new JSONObject();
-				JSONObject jsonObject2 = new JSONObject();
-				if (list.get(j).getDate() == list.get(0).getDate() && test) {
-					jsonObject1.put("title", list.get(j).getTitle());
-					jsonObject1.put("time", list.get(j).getTime());
-					jsonObject1.put("duration", list.get(j).getDuration());
-					jsonObjects.add(jsonObject1);
-				} else if (list.get(j).getDate() != list.get(0).getDate() && test) {
-					jsonObject2.put("title", list.get(j).getTitle());
-					jsonObject2.put("time", list.get(j).getTime());
-					jsonObject2.put("duration", list.get(j).getDuration());
-					jsonObjects2.add(jsonObject2);
+				JSONObject json = new JSONObject();
+				if (list.get(j).getDate() == myDate.get(i)) {
+					json.put("title", list.get(j).getTitle());
+					json.put("time", list.get(j).getTime());
+					json.put("duration", list.get(j).getDuration());
+					jsonObjects.add(json);
+				} else {
+					continue;
 				}
 			}
 
-			if (i == 1) {
-				jsonObject.put("list", jsonObjects);
-			} else {
-				jsonObject.put("list", jsonObjects2);
-			}
 			date = getNextDay(date);
+			jsonObject.put("list", jsonObjects);
 			data.add(jsonObject);
-			test = false;
 		}
 
 		return data;
+	}
+
+	public static final <T> void swap(List<T> l, int i, int j) {
+		Collections.<T>swap(l, i, j);
 	}
 }

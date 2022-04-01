@@ -3,6 +3,7 @@ package com.exercise4.controller;
 import java.io.File;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,9 +27,9 @@ public class Exercise4Controller {
 		try {
 			File fileToRead = new File(System.getProperty("user.dir") + "\\uploads\\" + fileName);
 			file.transferTo(fileToRead);
-			List<Exercise4Response> dataList = exercise4Service.readFile(fileToRead);
+			JSONObject jsonObject = exercise4Service.readFile(fileToRead);
 			ObjectMapper objectMapper = new ObjectMapper();
-			String jsonString = objectMapper.writeValueAsString(exercise4Service.setAgenda(dataList));
+			String jsonString = objectMapper.writeValueAsString(exercise4Service.setAgenda(jsonObject));
 			return jsonString;
 
 		} catch (Exception e) {
