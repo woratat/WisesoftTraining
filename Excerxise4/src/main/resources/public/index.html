@@ -13,13 +13,13 @@
     <input type="file" name="fileUpload" id="fileUpload" accept=".txt,.json" onchange="showFileName()">
   </div>
   <button id="uploadButton" onclick="uploadFile()">Upload</button>
-  <button id="clearFile" onclick="clearFile()">Clear</button>
+  <button id="clearFile" onclick="clearAll()">Clear</button>
   <div class="jsonInput">
-    <textarea id="jsonInput" name="jsonInput" rows="9" cols="50" placeholder="JSON input text..."></textarea>
+    <textarea id="jsonInput" name="jsonInput" rows="9" cols="50" placeholder="JSON input text..." onchange="disableFile()"></textarea>
     <br><br>
   </div>
-  <button id="jsonButton" onclick="uploadJson()">Upload</button>
-  <button id="clearButton" onclick="clearText()">Clear</button>
+  <button id="jsonButton" onclick="uploadFile()">Upload</button>
+  <button id="clearButton" onclick="clearAll()">Clear</button>
 </div>
 
 <div class="display">
@@ -31,7 +31,7 @@
         if (fileUpload.files[0] != undefined) {
           let formData = new FormData();
           formData.append("file", fileUpload.files[0]);
-          let response = await fetch("/upload", {
+          let response = await fetch("/uploadFile", {
             method: "POST",
             body: formData,
           });
@@ -39,19 +39,24 @@
           if (response.status == 200) {
             alert("File uploaded successfully.");
             document.querySelector("#json").textContent = JSON.stringify(myJson,null,2);
-            clearFile();
+            document.getElementById("fileUpload").value = "";
+            document.getElementById("noFile").textContent = "No file chosen...";
+          }
+        }else if(jsonInput.value != ""){
+          const textValue = document.getElementById("jsonInput").value;
+          if(isJsonString(textValue)){
+            let response = await fetch("/jsonText", {
+              method: "POST",
+              body: textValue,
+            });
+            const myJson = await response.json();
+          if(response.status == 200) {
+            document.querySelector("#json").textContent = JSON.stringify(myJson,null,2);
+          }
           }
         }else{
-          alert("Please select file before submiting.");
+          alert("Please select file or insert json string before submiting.");
         }
-      }
-
-      function uploadJson(){
-        const textArea = document.getElementById("jsonInput");
-        if(!textArea.value){
-          alert("Please type something before submiting.");
-        }
-        console.log(isJsonString(textArea.value));
       }
 
       function isJsonString(str) {
@@ -67,16 +72,21 @@
         if(fileUpload.files[0] != undefined){
           const noFile = document.querySelector("#noFile");
           noFile.textContent = `${fileUpload.files[0].name}`;
+          document.getElementById("jsonInput").disabled = true;
         }
       }
 
-      function clearText(){
+      function clearAll(){
+        document.getElementById("json").textContent = "";
         document.getElementById("jsonInput").value = "";
-      }
-      
-      function clearFile(){
+        document.getElementById("jsonInput").disabled = false;
         document.getElementById("fileUpload").value = "";
+        document.getElementById("fileUpload").disabled = false;
         document.getElementById("noFile").textContent = "No file chosen...";
+      }
+
+      function disableFile(){
+        document.getElementById("fileUpload").disabled = true;
       }
     </script>
     <script
