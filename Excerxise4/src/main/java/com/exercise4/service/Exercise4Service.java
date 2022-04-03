@@ -19,19 +19,19 @@ import java.util.Locale;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
-import com.exercise4.response.Exercise4Response;
+import com.exercise4.model.Exercise4Model;
 
 @Service
 public class Exercise4Service {
 
 	public JSONObject readFile(File fileToRead) {
-		List<Exercise4Response> dataList = new LinkedList<>();
+		List<Exercise4Model> dataList = new LinkedList<>();
 		JSONObject jsonObject = new JSONObject();
 		int i = 0;
 		try (BufferedReader br = new BufferedReader(new FileReader(fileToRead))) {
 			String strCurrentLine;
 			while ((strCurrentLine = br.readLine()) != null) {
-				Exercise4Response er = new Exercise4Response();
+				Exercise4Model er = new Exercise4Model();
 				if (i == 0) {
 					jsonObject.put("date", strCurrentLine);
 					++i;
@@ -52,12 +52,12 @@ public class Exercise4Service {
 	}
 
 	public List<JSONObject> setStringJson(JSONObject jsonObject) {
-		List<Exercise4Response> dataList = new ArrayList<>();
+		List<Exercise4Model> dataList = new ArrayList<>();
 		try {
 			if (jsonObject.containsKey("date") && jsonObject.containsKey("list")) {
 				List<JSONObject> arr = (List<JSONObject>) jsonObject.get("list");
 				for (int i = 0; i < arr.size(); i++) {
-					Exercise4Response er = new Exercise4Response();
+					Exercise4Model er = new Exercise4Model();
 					er.setTitle(arr.get(i).get("title").toString());
 					er.setDuration(Integer.parseInt(arr.get(i).get("duration").toString()));
 					dataList.add(er);
@@ -72,10 +72,10 @@ public class Exercise4Service {
 	}
 
 	public List<JSONObject> setAgenda(JSONObject jsonObject) {
-		List<Exercise4Response> data = (List<Exercise4Response>) jsonObject.get("list");
+		List<Exercise4Model> data = (List<Exercise4Model>) jsonObject.get("list");
 		DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mma", Locale.US);
 		LocalTime localTime = LocalTime.of(9, 0);
-		List<Exercise4Response> list = new ArrayList<>();
+		List<Exercise4Model> list = new ArrayList<>();
 		String date = jsonObject.get("date").toString();
 		boolean morning = false;
 
@@ -85,25 +85,25 @@ public class Exercise4Service {
 			int minute = min % 60;
 
 			if (localTime.equals(LocalTime.NOON) || (localTime.isAfter(LocalTime.NOON) && morning)) {
-				list.add(new Exercise4Response("Lunch", df.format(localTime), date, 60));
+				list.add(new Exercise4Model("Lunch", df.format(localTime), date, 60));
 				localTime = localTime.plusHours(1);
 				morning = false;
 			}
 			if (localTime.plusHours(hour).plusMinutes(minute).isAfter(LocalTime.of(17, 0))) {
-				list.add(new Exercise4Response("Networking Event", df.format(localTime), date, 0));
+				list.add(new Exercise4Model("Networking Event", df.format(localTime), date, 0));
 				date = getNextDay(date);
 				localTime = LocalTime.of(9, 0);
 				morning = true;
 			}
-			list.add(new Exercise4Response(data.get(i).getTitle(), df.format(localTime), date,
+			list.add(new Exercise4Model(data.get(i).getTitle(), df.format(localTime), date,
 					data.get(i).getDuration()));
 			localTime = localTime.plusHours(hour).plusMinutes(minute);
 			if (i == (data.size() - 1)) {
-				list.add(new Exercise4Response("Networking Event", df.format(localTime), date, 0));
+				list.add(new Exercise4Model("Networking Event", df.format(localTime), date, 0));
 			}
 		}
-
-		return CreateJson(list);
+		List<JSONObject> json =  CreateJson(list);
+		return json;
 	}
 
 	public static String formatDate(String date) {
@@ -131,7 +131,7 @@ public class Exercise4Service {
 		return String.valueOf(ld);
 	}
 
-	public List<JSONObject> CreateJson(List<Exercise4Response> list) {
+	public List<JSONObject> CreateJson(List<Exercise4Model> list) {
 		List<String> myDate = new ArrayList<>();
 		List<JSONObject> data = new ArrayList<>();
 		LinkedHashSet<String> sets = new LinkedHashSet<>();

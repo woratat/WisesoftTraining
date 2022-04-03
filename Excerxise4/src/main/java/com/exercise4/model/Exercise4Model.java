@@ -1,13 +1,13 @@
-package com.exercise4.response;
+package com.exercise4.model;
 
-public class Exercise4Response {
+public class Exercise4Model {
 
 	private String title;
 	private String time;
 	private String date;
 	private int duration;
 
-	public Exercise4Response(String title, String time, String date, int duration) {
+	public Exercise4Model(String title, String time, String date, int duration) {
 		super();
 		this.title = title;
 		this.time = time;
@@ -15,7 +15,7 @@ public class Exercise4Response {
 		this.duration = duration;
 	}
 
-	public Exercise4Response() {
+	public Exercise4Model() {
 		super();
 	}
 
