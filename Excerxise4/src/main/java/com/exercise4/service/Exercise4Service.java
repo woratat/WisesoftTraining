@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,7 @@ public class Exercise4Service {
 		return jsonObject;
 	}
 
-	public List<JSONObject> setStringJson(JSONObject jsonObject) {
+	public JSONArray setStringJson(JSONObject jsonObject) {
 		List<Exercise4Model> dataList = new ArrayList<>();
 		try {
 			if (jsonObject.containsKey("date") && jsonObject.containsKey("list")) {
@@ -67,11 +68,11 @@ public class Exercise4Service {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		List<JSONObject> json = setAgenda(jsonObject);
+		JSONArray json = setAgenda(jsonObject);
 		return json;
 	}
 
-	public List<JSONObject> setAgenda(JSONObject jsonObject) {
+	public JSONArray setAgenda(JSONObject jsonObject) {
 		List<Exercise4Model> data = (List<Exercise4Model>) jsonObject.get("list");
 		DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mma", Locale.US);
 		LocalTime localTime = LocalTime.of(9, 0);
@@ -95,14 +96,13 @@ public class Exercise4Service {
 				localTime = LocalTime.of(9, 0);
 				morning = true;
 			}
-			list.add(new Exercise4Model(data.get(i).getTitle(), df.format(localTime), date,
-					data.get(i).getDuration()));
+			list.add(new Exercise4Model(data.get(i).getTitle(), df.format(localTime), date, data.get(i).getDuration()));
 			localTime = localTime.plusHours(hour).plusMinutes(minute);
 			if (i == (data.size() - 1)) {
 				list.add(new Exercise4Model("Networking Event", df.format(localTime), date, 0));
 			}
 		}
-		List<JSONObject> json =  CreateJson(list);
+		JSONArray json = CreateJson(list);
 		return json;
 	}
 
@@ -131,9 +131,9 @@ public class Exercise4Service {
 		return String.valueOf(ld);
 	}
 
-	public List<JSONObject> CreateJson(List<Exercise4Model> list) {
+	public JSONArray CreateJson(List<Exercise4Model> list) {
 		List<String> myDate = new ArrayList<>();
-		List<JSONObject> data = new ArrayList<>();
+		JSONArray arr = new JSONArray();
 		LinkedHashSet<String> sets = new LinkedHashSet<>();
 		String date = list.get(0).getDate();
 
@@ -161,8 +161,8 @@ public class Exercise4Service {
 
 			date = getNextDay(date);
 			jsonObject.put("list", jsonObjects);
-			data.add(jsonObject);
+			arr.add(jsonObject);
 		}
-		return data;
+		return arr;
 	}
 }

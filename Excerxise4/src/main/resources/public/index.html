@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <link>
     <title>Exercise 4</title>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
@@ -20,37 +21,52 @@
   <button id="clearButton" onclick="clearAll()">Clear</button>
 </div>
 
-<div class="display">
-  <pre id="json"></pre>
-</div>
+<div class="display" id="display"></div>
 
     <script>
       async function uploadFile() {
         if (fileUpload.files[0] != undefined) {
           let formData = new FormData();
           formData.append("file", fileUpload.files[0]);
-          let response = await fetch("/uploadFile", {
-            method: "POST",
-            body: formData,
-          });
-          const myJson = await response.json();
-          if (response.status == 200) {
-            alert("File uploaded successfully.");
-            document.querySelector("#json").textContent = JSON.stringify(myJson,null,2);
-            document.getElementById("fileUpload").value = "";
-            document.getElementById("noFile").textContent = "No file chosen...";
-          }
+          let result = fetchService("/file", "POST", formData);
+          result.then(x => {
+            if(x != undefined){
+              let display = document.getElementById("display");
+              for(let i = 0; i < Object.keys(x).length; i++){
+                display.innerHTML = display.innerHTML+`<h4 id="dateTH"><u>วันที่ ${x[i].dateTH}</u></h4>
+                <h4 id="time">เวลา</h4>
+                `;
+                for(let j = 0; j < x[i].list.length; j++){
+                  display.innerHTML = display.innerHTML + `
+                  <p id="topic">${x[i].list[j].time} ${x[i].list[j].title}</p>
+                  `;
+                }
+              }
+              alert("File uploaded successfully.");
+              document.getElementById("fileUpload").value = "";
+              document.getElementById("noFile").textContent = "No file chosen...";
+              
+            }
+          })
         }else if(jsonInput.value != ""){
           const textValue = document.getElementById("jsonInput").value;
           if(isJsonString(textValue)){
-            let response = await fetch("/jsonText", {
-              method: "POST",
-              body: textValue,
-            });
-            const myJson = await response.json();
-          if(response.status == 200) {
-            document.querySelector("#json").textContent = JSON.stringify(myJson,null,2);
-          }
+            let result = fetchService("/json", "POST", textValue);
+            result.then(x => {
+              if(x != undefined){
+                let display = document.getElementById("display");
+                for(let i = 0; i < Object.keys(x).length; i++){
+                display.innerHTML = display.innerHTML+`<h4 id="dateTH"><u>วันที่ ${x[i].dateTH}</u></h4>
+                <h4 id="time">เวลา</h4>
+                `;
+                for(let j = 0; j < x[i].list.length; j++){
+                  display.innerHTML = display.innerHTML + `
+                  <p id="topic">${x[i].list[j].time} ${x[i].list[j].title}</p>
+                  `;
+                }
+              }
+              }
+            })
           }
         }else{
           alert("Please select file or insert json string before submiting.");
@@ -75,16 +91,30 @@
       }
 
       function clearAll(){
-        document.getElementById("json").textContent = "";
         document.getElementById("jsonInput").value = "";
         document.getElementById("jsonInput").disabled = false;
         document.getElementById("fileUpload").value = "";
         document.getElementById("fileUpload").disabled = false;
         document.getElementById("noFile").textContent = "No file chosen...";
+        document.getElementById("display").innerHTML = "";
       }
 
       function disableFile(){
         document.getElementById("fileUpload").disabled = true;
+      }
+
+      async function fetchService(path, method, data){
+        let response;
+        await fetch(path, {
+            method: method,
+            body: data,
+          })
+          .then((res) => res.json())
+          .then(_data => response = _data)
+          .catch(e => {
+            console.error(e);
+          })
+          return response;  
       }
     </script>
     <script

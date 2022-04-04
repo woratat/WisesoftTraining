@@ -1,0 +1,33 @@
+server:
+  port: 8080
+spring:
+  config:
+    activate:
+      on-profile: dev
+refresh:
+  rate: 10
+
+---
+
+server:
+  port: 9080
+spring:
+  config:
+    activate:
+      on-profile: sit
+      
+---
+
+server:
+  port: 9090
+spring:
+  config:
+    activate:
+      on-profile: uat
+      
+---
+
+spring:
+  profiles:
+    active:
+    - dev 

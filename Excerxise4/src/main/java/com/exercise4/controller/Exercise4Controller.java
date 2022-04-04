@@ -3,6 +3,7 @@ package com.exercise4.controller;
 import java.io.File;
 import java.util.List;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +33,15 @@ public class Exercise4Controller {
 			@ApiResponse(responseCode = "200", description = "Uploaded successfully", content = {
 					@Content(mediaType = "application/json") }),
 			@ApiResponse(responseCode = "404", description = "Not available", content = @Content) })
-	@PostMapping(path = "/uploadFile", consumes = "multipart/form-data", produces = "application/json")
-	public ResponseEntity<List<JSONObject>> handleFileUpload(@RequestPart("file") MultipartFile file) {
+	@PostMapping(path = "/file", consumes = "multipart/form-data", produces = "application/json")
+	public ResponseEntity<JSONArray> handleFileUpload(@RequestPart("file") MultipartFile file) {
 		String fileName = file.getOriginalFilename();
 
 		try {
 			File fileToRead = new File(System.getProperty("user.dir") + "\\uploads\\" + fileName);
 			file.transferTo(fileToRead);
 			JSONObject jsonObject = exercise4Service.readFile(fileToRead);
-			List<JSONObject> json = exercise4Service.setAgenda(jsonObject);
+			JSONArray json = exercise4Service.setAgenda(jsonObject);
 			return ResponseEntity.ok(json);
 
 		} catch (Exception e) {
@@ -53,7 +54,7 @@ public class Exercise4Controller {
 			@ApiResponse(responseCode = "200", description = "Uploaded successfully", content = {
 					@Content(mediaType = "application/json") }),
 			@ApiResponse(responseCode = "404", description = "Not available", content = @Content) })
-	@PostMapping("/jsonText")
+	@PostMapping(path = "/json")
 	public ResponseEntity<List<JSONObject>> convertJson(@RequestBody String text) {
 		try {
 			JSONParser parser = new JSONParser();
