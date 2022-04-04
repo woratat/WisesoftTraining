@@ -1,7 +1,6 @@
 package com.exercise4.controller;
 
 import java.io.File;
-import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -36,13 +35,12 @@ public class Exercise4Controller {
 	@PostMapping(path = "/file", consumes = "multipart/form-data", produces = "application/json")
 	public ResponseEntity<JSONArray> handleFileUpload(@RequestPart("file") MultipartFile file) {
 		String fileName = file.getOriginalFilename();
-
 		try {
 			File fileToRead = new File(System.getProperty("user.dir") + "\\uploads\\" + fileName);
 			file.transferTo(fileToRead);
 			JSONObject jsonObject = exercise4Service.readFile(fileToRead);
 			JSONArray json = exercise4Service.setAgenda(jsonObject);
-			return ResponseEntity.ok(json);
+			return ResponseEntity.ok().body(json);
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -55,13 +53,12 @@ public class Exercise4Controller {
 					@Content(mediaType = "application/json") }),
 			@ApiResponse(responseCode = "404", description = "Not available", content = @Content) })
 	@PostMapping(path = "/json")
-	public ResponseEntity<List<JSONObject>> convertJson(@RequestBody String text) {
+	public ResponseEntity<JSONArray> convertJson(@RequestBody String text) {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONObject jsonObject = (JSONObject) parser.parse(text);
-			exercise4Service.setStringJson(jsonObject);
-			List<JSONObject> json = exercise4Service.setAgenda(jsonObject);
-			return ResponseEntity.ok(json);
+			JSONArray json = exercise4Service.setStringJson(jsonObject);
+			return ResponseEntity.ok().body(json);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}

@@ -75,9 +75,9 @@ public class Exercise4Service {
 	public JSONArray setAgenda(JSONObject jsonObject) {
 		List<Exercise4Model> data = (List<Exercise4Model>) jsonObject.get("list");
 		DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mma", Locale.US);
-		LocalTime localTime = LocalTime.of(9, 0);
-		List<Exercise4Model> list = new ArrayList<>();
 		String date = jsonObject.get("date").toString();
+		List<Exercise4Model> list = new ArrayList<>();
+		LocalTime localTime = LocalTime.of(9, 0);		
 		boolean morning = false;
 
 		for (int i = 0; i < data.size(); i++) {
@@ -132,20 +132,18 @@ public class Exercise4Service {
 	}
 
 	public JSONArray CreateJson(List<Exercise4Model> list) {
-		List<String> myDate = new ArrayList<>();
-		JSONArray arr = new JSONArray();
 		LinkedHashSet<String> sets = new LinkedHashSet<>();
-		String date = list.get(0).getDate();
+		JSONArray arr = new JSONArray();
 
 		list.forEach(s -> sets.add(s.getDate()));
-		myDate.addAll(sets);
+		List<String> myDate = new ArrayList<>(sets);
 
 		for (int i = 0; i <= myDate.size() - 1; i++) {
 			List<JSONObject> jsonObjects = new ArrayList<>();
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("day", i + 1);
-			jsonObject.put("date", date);
-			jsonObject.put("dateTH", formatDate(date));
+			jsonObject.put("date", myDate.get(i));
+			jsonObject.put("dateTH", formatDate(myDate.get(i)));
 
 			for (int j = 0; j < list.size(); j++) {
 				JSONObject json = new JSONObject();
@@ -159,7 +157,6 @@ public class Exercise4Service {
 				}
 			}
 
-			date = getNextDay(date);
 			jsonObject.put("list", jsonObjects);
 			arr.add(jsonObject);
 		}
