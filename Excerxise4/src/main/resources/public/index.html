@@ -25,6 +25,7 @@
 
     <script>
       async function uploadFile() {
+        document.getElementById("display").innerHTML = "";
         if (fileUpload.files[0] != undefined) {
           let formData = new FormData();
           formData.append("file", fileUpload.files[0]);
@@ -66,7 +67,12 @@
                 }
               }
               }
+              else{
+                document.getElementById("display").innerHTML = `<p style="text-align:center;">Not available</p>`;
+              }
             })
+          } else{
+            alert("The request is not in a JSON format");
           }
         }else{
           alert("Please select file or insert json string before submiting.");
@@ -92,6 +98,8 @@
 
       function clearAll(){
         document.getElementById("jsonInput").value = "";
+        document.getElementById("jsonInput").style.height = "138px";
+        document.getElementById("jsonInput").style.width = "388px";
         document.getElementById("jsonInput").disabled = false;
         document.getElementById("fileUpload").value = "";
         document.getElementById("fileUpload").disabled = false;
@@ -116,6 +124,15 @@
           })
           return response;  
       }
+
+      let placeholderJs = ` {
+        "date":"2022-02-25",
+        "list":[{
+          "title":"Example title",
+          "duration":60
+        }]
+  }`;
+      document.getElementById("jsonInput").setAttribute("placeholder", placeholderJs);
     </script>
     <script
       src="https://code.jquery.com/jquery-3.6.0.js"
