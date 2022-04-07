@@ -1,33 +1,14 @@
-server:
-  port: 8080
-spring:
-  config:
-    activate:
-      on-profile: dev
-refresh:
-  rate: 10
-
----
-
-server:
-  port: 9080
-spring:
-  config:
-    activate:
-      on-profile: sit
-      
----
-
-server:
-  port: 9090
-spring:
-  config:
-    activate:
-      on-profile: uat
-      
----
-
 spring:
   profiles:
     active:
-    - dev 
+    - dev
+  application:
+    name: '@project.name@'
+    
+build:
+  version: '@project.version@'
+  timestamp: '@timestamp@'
+    
+logging:
+  pattern:
+    console: '[%-8(%X{LOG_TYPE})] %d{yyyy-MM-dd HH:mm:ss} [${spring.application.name},${build.version},${spring.profiles}] [%M\(%F:%L\)] : %msg%n'

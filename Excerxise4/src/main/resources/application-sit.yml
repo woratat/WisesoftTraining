@@ -1,0 +1,5 @@
+spring:
+  profiles: sit
+  
+server:
+  port: 9080
