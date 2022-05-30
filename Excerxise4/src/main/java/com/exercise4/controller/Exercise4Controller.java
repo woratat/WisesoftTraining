@@ -1,6 +1,7 @@
 package com.exercise4.controller;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -8,8 +9,10 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,5 +65,21 @@ public class Exercise4Controller {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
+	}
+	
+	@Operation(summary = "This API uploads .txt file and return data as JSON")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Uploaded successfully", content = {
+					@Content(mediaType = "application/json") }),
+			@ApiResponse(responseCode = "404", description = "Not available", content = @Content) })
+	@PostMapping(path = "/uploadFile", consumes = "multipart/form-data", produces = "application/json")
+	public ResponseEntity<JSONArray> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+		Exercise4Service.saveFile(fileName, multipartFile);
+		
+		File fileToRead = new File(System.getProperty("user.dir") + "\\file-upload\\" + fileName);
+		JSONObject jsonObject = exercise4Service.readFile(fileToRead);
+		JSONArray json = exercise4Service.setAgenda(jsonObject);
+		return ResponseEntity.ok().body(json);
 	}
 }

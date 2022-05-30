@@ -1,0 +1,5 @@
+spring:
+  profiles: uat
+  
+server:
+  port: 9090

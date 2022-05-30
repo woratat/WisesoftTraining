@@ -1,38 +1,35 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<link>
-<title>Exercise 4</title>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <link>
+    <title>Exercise 4</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
 
-	<div class="file-upload">
-		<div class="file-select">
-			<div class="file-select-button" id="fileName">Choose File</div>
-			<div class="file-select-name" id="noFile">No file chosen...</div>
-			<input type="file" name="fileUpload" id="fileUpload"
-				accept=".txt,.json" onchange="showFileName()">
-		</div>
-		<div class="jsonInput">
-			<textarea id="jsonInput" name="jsonInput" rows="9" cols="50"
-				placeholder="JSON input text..." onchange="disableFile()"></textarea>
-			<br>
-			<br>
-		</div>
-		<button id="uploadButton" onclick="uploadFile()">Upload</button>
-		<button id="clearButton" onclick="clearAll()">Clear</button>
-	</div>
+<div class="file-upload">
+  <div class="file-select">
+    <div class="file-select-button" id="fileName">Choose File</div>
+    <div class="file-select-name" id="noFile">No file chosen...</div> 
+    <input type="file" name="fileUpload" id="fileUpload" accept=".txt,.json" onchange="showFileName()">
+  </div>
+  <div class="jsonInput">
+    <textarea id="jsonInput" name="jsonInput" rows="9" cols="50" placeholder="JSON input text..." onchange="disableFile()"></textarea>
+    <br><br>
+  </div>
+  <button id="jsonButton" onclick="uploadFile()">Upload</button>
+  <button id="clearButton" onclick="clearAll()">Clear</button>
+</div>
 
-	<div class="display" id="display"></div>
+<div class="display" id="display"></div>
 
-	<script>
+    <script>
       async function uploadFile() {
         document.getElementById("display").innerHTML = "";
         if (fileUpload.files[0] != undefined) {
-          var formData = new FormData();
+          let formData = new FormData();
           formData.append("file", fileUpload.files[0]);
-          let result = fetchService("/uploadFile", "POST", formData);
+          let result = fetchService("/file", "POST", formData);
           result.then(x => {
             if(x != undefined){
               let display = document.getElementById("display");
@@ -49,6 +46,7 @@
               alert("File uploaded successfully.");
               document.getElementById("fileUpload").value = "";
               document.getElementById("noFile").textContent = "No file chosen...";
+              
             }
           })
         }else if(jsonInput.value != ""){
@@ -59,9 +57,9 @@
               if(x != undefined){
                 let display = document.getElementById("display");
                 for(let i = 0; i < Object.keys(x).length; i++){
-                    display.innerHTML = display.innerHTML+`<h4 id="dateTH"><u>วันที่ ${x[i].dateTH}</u></h4>
-                    <h4>เวลา</h4>
-                    `;
+                display.innerHTML = display.innerHTML+`<h4 id="dateTH"><u>วันที่ ${x[i].dateTH}</u></h4>
+                <h4>เวลา</h4>
+                `;
                 for(let j = 0; j < x[i].list.length; j++){
                   display.innerHTML = display.innerHTML + `
                   <p id="topic">${x[i].list[j].time} ${x[i].list[j].title}</p>
@@ -128,8 +126,10 @@
       }
 
     </script>
-	<script src="https://code.jquery.com/jquery-3.6.0.js"
-		integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-		crossorigin="anonymous"></script>
-</body>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
