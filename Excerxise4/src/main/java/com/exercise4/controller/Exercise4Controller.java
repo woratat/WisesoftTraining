@@ -2,8 +2,8 @@ package com.exercise4.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,16 +34,16 @@ public class Exercise4Controller {
 			@ApiResponse(responseCode = "200", description = "Uploaded successfully", content = {
 					@Content(mediaType = "application/json") }),
 			@ApiResponse(responseCode = "404", description = "Not available", content = @Content) })
-	@PostMapping(path = "/file", consumes = "multipart/form-data", produces = "application/json")
-	public ResponseEntity<JSONArray> handleFileUpload(@RequestPart("file") MultipartFile file) {
-		String fileName = file.getOriginalFilename();
+	@PostMapping(path = "/uploadFile", consumes = "multipart/form-data", produces = "application/json")
+	public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
 		try {
-			File fileToRead = new File(System.getProperty("user.dir") + "\\uploads\\" + fileName);
-			file.transferTo(fileToRead);
-			JSONObject jsonObject = exercise4Service.readFile(fileToRead);
-			JSONArray json = exercise4Service.setAgenda(jsonObject);
-			return ResponseEntity.ok().body(json);
-
+			String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+			Exercise4Service.saveFile(fileName, multipartFile);
+			File fileToRead = new File(System.getProperty("user.dir") + "\\file-upload\\" + fileName);
+			
+			HashMap<String, Object> readFile = exercise4Service.readTextFile(fileToRead);
+			String json = exercise4Service.setAgenda(readFile);
+		return ResponseEntity.ok().body(json);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
@@ -56,30 +55,15 @@ public class Exercise4Controller {
 					@Content(mediaType = "application/json") }),
 			@ApiResponse(responseCode = "404", description = "Not available", content = @Content) })
 	@PostMapping(path = "/json")
-	public ResponseEntity<JSONArray> convertJson(@RequestBody String text) {
+	public ResponseEntity<String> convertJson(@RequestBody String text) {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONObject jsonObject = (JSONObject) parser.parse(text);
-			JSONArray json = exercise4Service.setStringJson(jsonObject);
-			return ResponseEntity.ok().body(json);
+			HashMap<String,Object> json = exercise4Service.stringToJson(jsonObject);
+			String result = exercise4Service.setAgenda(json);
+			return ResponseEntity.ok().body(result);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
-	}
-	
-	@Operation(summary = "This API uploads .txt file and return data as JSON")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Uploaded successfully", content = {
-					@Content(mediaType = "application/json") }),
-			@ApiResponse(responseCode = "404", description = "Not available", content = @Content) })
-	@PostMapping(path = "/uploadFile", consumes = "multipart/form-data", produces = "application/json")
-	public ResponseEntity<JSONArray> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
-		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-		Exercise4Service.saveFile(fileName, multipartFile);
-		
-		File fileToRead = new File(System.getProperty("user.dir") + "\\file-upload\\" + fileName);
-		JSONObject jsonObject = exercise4Service.readFile(fileToRead);
-		JSONArray json = exercise4Service.setAgenda(jsonObject);
-		return ResponseEntity.ok().body(json);
 	}
 }

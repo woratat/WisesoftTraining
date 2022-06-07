@@ -1,6 +1,9 @@
 package com.exercise4.service;
 
 import com.exercise4.model.Exercise4Model;
+import com.exercise4.model.Exercise4JsonModel;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,11 +20,10 @@ import java.time.chrono.ThaiBuddhistDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,43 +31,44 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class Exercise4Service {
 
-  public JSONObject readFile(File fileToRead) {
+  public HashMap<String, Object> readTextFile(File fileToRead) {
     List<Exercise4Model> dataList = new LinkedList<>();
-    JSONObject jsonObject = new JSONObject();
+    HashMap<String, Object> hm = new HashMap<>();
     int i = 0;
+
     try (BufferedReader br = new BufferedReader(new FileReader(fileToRead))) {
       String strCurrentLine;
       while ((strCurrentLine = br.readLine()) != null) {
-        Exercise4Model er = new Exercise4Model();
+        Exercise4Model model = new Exercise4Model();
         if (i == 0) {
-          jsonObject.put("date", strCurrentLine);
+          hm.put("date", strCurrentLine);
           ++i;
         } else {
           int time = Integer.parseInt(strCurrentLine.replaceAll("[^0-9]+", ""));
-          er.setTitle(strCurrentLine);
-          er.setDuration(time);
+          model.setTitle(strCurrentLine);
+          model.setDuration(time);
         }
-        dataList.add(er);
+        dataList.add(model);
       }
       dataList.remove(0);
-      jsonObject.put("list", dataList);
+      hm.put("list", dataList);
     } catch (IOException e) {
       System.out.println("File not found.");
     }
 
-    return jsonObject;
+    return hm;
   }
 
-  public JSONArray setStringJson(JSONObject jsonObject) {
+  public JSONObject stringToJson(JSONObject jsonObject) {
     List<Exercise4Model> dataList = new ArrayList<>();
     try {
       if (jsonObject.containsKey("date") && jsonObject.containsKey("list")) {
-        List<JSONObject> arr = (List<JSONObject>) jsonObject.get("list");
-        for (int i = 0; i < arr.size(); i++) {
+        List<JSONObject> jsonList = (List<JSONObject>) jsonObject.get("list");
+        for (int i = 0; i < jsonList.size(); i++) {
           Exercise4Model er = new Exercise4Model();
-          er.setTitle(arr.get(i).get("title").toString());
+          er.setTitle(jsonList.get(i).get("title").toString());
           er.setDuration(
-            Integer.parseInt(arr.get(i).get("duration").toString())
+            Integer.parseInt(jsonList.get(i).get("duration").toString())
           );
           dataList.add(er);
         }
@@ -74,14 +77,13 @@ public class Exercise4Service {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    JSONArray json = setAgenda(jsonObject);
-    return json;
+    return jsonObject;
   }
 
-  public JSONArray setAgenda(JSONObject jsonObject) {
-    List<Exercise4Model> data = (List<Exercise4Model>) jsonObject.get("list");
+  public String setAgenda(HashMap<String, Object> obj) {
+    List<Exercise4Model> data = (List<Exercise4Model>) obj.get("list");
     DateTimeFormatter df = DateTimeFormatter.ofPattern("hh:mma", Locale.US);
-    String date = jsonObject.get("date").toString();
+    String date = obj.get("date").toString();
     List<Exercise4Model> list = new ArrayList<>();
     LocalTime localTime = LocalTime.of(9, 0);
     boolean morning = false;
@@ -127,7 +129,7 @@ public class Exercise4Service {
         );
       }
     }
-    JSONArray json = CreateJson(list);
+    String json = mapJsonArray(list);
     return json;
   }
 
@@ -154,36 +156,47 @@ public class Exercise4Service {
     return String.valueOf(ld);
   }
 
-  public JSONArray CreateJson(List<Exercise4Model> list) {
-    LinkedHashSet<String> sets = new LinkedHashSet<>();
-    JSONArray arr = new JSONArray();
+  public String mapJsonArray(List<Exercise4Model> list) {
+    List<String> dateList = new ArrayList<>();
+    List<Object> data = new ArrayList<>();
 
-    list.forEach(s -> sets.add(s.getDate()));
-    List<String> myDate = new ArrayList<>(sets);
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
 
-    for (int i = 0; i <= myDate.size() - 1; i++) {
-      List<JSONObject> jsonObjects = new ArrayList<>();
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.put("day", i + 1);
-      jsonObject.put("date", myDate.get(i));
-      jsonObject.put("dateTH", formatDate(myDate.get(i)));
+    list.forEach(
+      s -> {
+        if (!dateList.contains(s.getDate())) {
+          dateList.add(s.getDate());
+        }
+      }
+    );
+
+    for (int i = 0; i <= dateList.size() - 1; i++) {
+      HashMap<String, Object> hm = new HashMap<>();
+      List<Object> obj = new ArrayList<>();
+
+      hm.put("day", i + 1);
+      hm.put("date", dateList.get(i));
+      hm.put("dateTH", formatDate(dateList.get(i)));
 
       for (int j = 0; j < list.size(); j++) {
-        JSONObject json = new JSONObject();
-        if (list.get(j).getDate() == myDate.get(i)) {
-          json.put("title", list.get(j).getTitle());
-          json.put("time", list.get(j).getTime());
-          json.put("duration", list.get(j).getDuration());
-          jsonObjects.add(json);
+        Exercise4JsonModel jsonModel = new Exercise4JsonModel();
+
+        if (list.get(j).getDate() == dateList.get(i)) {
+          jsonModel.setDuration(list.get(j).getDuration());
+          jsonModel.setTime(list.get(j).getTime());
+          jsonModel.setTitle(list.get(j).getTitle());
         } else {
           continue;
         }
+        obj.add(jsonModel);
       }
-
-      jsonObject.put("list", jsonObjects);
-      arr.add(jsonObject);
+      hm.put("list", obj);
+      data.add(hm);
     }
-    return arr;
+
+    String json = gson.toJson(data);
+    return json;
   }
 
   public static void saveFile(String fileName, MultipartFile multipartFile)
