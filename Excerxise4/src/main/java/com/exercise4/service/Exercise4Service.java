@@ -1,7 +1,8 @@
 package com.exercise4.service;
 
-import com.exercise4.model.Exercise4Model;
 import com.exercise4.model.Exercise4JsonModel;
+import com.exercise4.model.Exercise4Model;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.chrono.ThaiBuddhistDate;
@@ -24,9 +26,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.time.temporal.*;
+
 
 @Service
 public class Exercise4Service {
@@ -59,25 +62,26 @@ public class Exercise4Service {
     return hm;
   }
 
-  public JSONObject stringToJson(JSONObject jsonObject) {
+  public HashMap<String, Object> stringToJson(JsonNode jsonNode) {
     List<Exercise4Model> dataList = new ArrayList<>();
+    HashMap<String, Object> hm = new HashMap<>();
+    hm.put("date", jsonNode.get("date").asText());
     try {
-      if (jsonObject.containsKey("date") && jsonObject.containsKey("list")) {
-        List<JSONObject> jsonList = (List<JSONObject>) jsonObject.get("list");
-        for (int i = 0; i < jsonList.size(); i++) {
-          Exercise4Model er = new Exercise4Model();
-          er.setTitle(jsonList.get(i).get("title").toString());
-          er.setDuration(
-            Integer.parseInt(jsonList.get(i).get("duration").toString())
-          );
-          dataList.add(er);
-        }
-        jsonObject.put("list", dataList);
+      for (int i = 0; i < jsonNode.get("list").size(); i++) {
+        Exercise4Model er = new Exercise4Model();
+        er.setTitle(jsonNode.get("list").get(i).get("title").toString());
+        er.setDuration(
+          Integer.parseInt(
+            jsonNode.get("list").get(i).get("duration").toString()
+          )
+        );
+        dataList.add(er);
       }
+      hm.put("list", dataList);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return jsonObject;
+    return hm;
   }
 
   public String setAgenda(HashMap<String, Object> obj) {
@@ -86,18 +90,38 @@ public class Exercise4Service {
     String date = obj.get("date").toString();
     List<Exercise4Model> list = new ArrayList<>();
     LocalTime localTime = LocalTime.of(9, 0);
-    boolean morning = false;
+    boolean morning = true;
 
     for (int i = 0; i < data.size(); i++) {
       int min = data.get(i).getDuration();
       int hour = min / 60;
       int minute = min % 60;
+      int duration = data.get(i).getDuration();
 
       if (
         localTime.equals(LocalTime.NOON) ||
-        (localTime.isAfter(LocalTime.NOON) && morning)
+        (localTime.plusHours(hour).plusMinutes(minute).isAfter(LocalTime.NOON) && morning)
       ) {
-        list.add(new Exercise4Model("Lunch", df.format(localTime), date, 60));
+        if(localTime.plusHours(hour).plusMinutes(minute).isAfter(LocalTime.NOON) && !localTime.equals(LocalTime.NOON)) {
+          int t = - (int) localTime.plusHours(hour).plusMinutes(minute).until(LocalTime.NOON, ChronoUnit.MINUTES);
+          int a = (t / 60);
+          int b = (t % 60);
+          duration = t;
+
+          list.add(
+        new Exercise4Model(
+          data.get(i).getTitle(),
+          df.format(localTime),
+          date,
+          data.get(i).getDuration() - t
+        )
+      );
+        localTime = localTime.plusHours(hour - a).plusMinutes(minute - b);
+        hour = a;
+        minute = b;
+        }
+
+        list.add(new Exercise4Model("Lunch", df.format(LocalTime.NOON), date, 60));
         localTime = localTime.plusHours(1);
         morning = false;
       }
@@ -107,6 +131,24 @@ public class Exercise4Service {
           .plusMinutes(minute)
           .isAfter(LocalTime.of(17, 0))
       ) {
+        if(localTime.plusHours(hour).plusMinutes(minute).isAfter(LocalTime.of(17, 0)) && !localTime.equals(LocalTime.of(17, 0))) {
+          int t = - (int) localTime.plusHours(hour).plusMinutes(minute).until(LocalTime.of(17, 0), ChronoUnit.MINUTES);
+          int a = (t / 60);
+          int b = (t % 60);
+          duration = t;
+
+          list.add(
+          new Exercise4Model(
+          data.get(i).getTitle(),
+          df.format(localTime),
+          date,
+          data.get(i).getDuration() - t
+        )
+      );
+        localTime = localTime.plusHours(hour - a).plusMinutes(minute - b);
+        hour = a;
+        minute = b;
+        }
         list.add(
           new Exercise4Model("Networking Event", df.format(localTime), date, 0)
         );
@@ -119,7 +161,7 @@ public class Exercise4Service {
           data.get(i).getTitle(),
           df.format(localTime),
           date,
-          data.get(i).getDuration()
+          duration
         )
       );
       localTime = localTime.plusHours(hour).plusMinutes(minute);
@@ -129,6 +171,7 @@ public class Exercise4Service {
         );
       }
     }
+
     String json = mapJsonArray(list);
     return json;
   }
